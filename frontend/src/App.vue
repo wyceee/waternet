@@ -35,10 +35,8 @@ const toggleWallet = () => {
 
 body {
   font-family: 'Poppins', sans-serif;
-  background-image: url('./assets/background.png');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
+  background: #edfaf4;
+  background: radial-gradient(circle, rgba(237, 250, 244, 1) 0%, rgba(194, 222, 255, 1) 100%);
   min-height: 100vh;
   margin: 0;
   padding: 0;

@@ -122,6 +122,10 @@
   </div>
 </template>
 
+<script setup>
+import { BarChart3, CheckCircle, Clock, Coins, Droplets, Leaf, TreePine } from 'lucide-vue-next';
+
+</script>
 <style>
 .header-section {
   margin-bottom: 32px;
