@@ -6,42 +6,22 @@
           <img src="@/assets/navbarlogo.png" alt="Logo" class="logo" />
         </div>
         <div class="nav-links">
-          <button
-              @click="$emit('changePage', 'dashboard')"
-              :class="currentPage === 'dashboard' ? 'nav-link active' : 'nav-link'"
-          >
-            Dashboard
-          </button>
-          <button
-              @click="$emit('changePage', 'registerMeasure')"
-              :class="currentPage === 'registerMeasure' ? 'nav-link active' : 'nav-link'"
-          >
-            Register Measure
-          </button>
-          <button
-              @click="$emit('changePage', 'supervisor')"
-              :class="currentPage === 'supervisor' ? 'nav-link active' : 'nav-link'"
-          >
-            Supervisor Panel
-          </button>
-          <button
-              @click="$emit('changePage', 'wallet')"
-              :class="currentPage === 'wallet' ? 'nav-link active' : 'nav-link'"
-          >
-            Wallet
-          </button>
+          <router-link to="/" class="nav-link" exact-active-class="active">Dashboard</router-link>
+          <router-link to="/register" class="nav-link" exact-active-class="active">Register Measure</router-link>
+          <router-link to="/supervisor" class="nav-link" exact-active-class="active">Supervisor Panel</router-link>
+          <router-link to="/wallet" class="nav-link" exact-active-class="active">Wallet</router-link>
         </div>
         <div class="auth-buttons">
           <button
               v-if="!isLoggedIn"
-              @click="navigateTo('login')"
+              @click="$router.push('/login')"
               class="auth-button login"
           >
             Login
           </button>
           <button
               v-if="!isLoggedIn"
-              @click="navigateTo('signup')"
+              @click="$router.push('/signup')"
               class="auth-button signup"
           >
             Signup
@@ -61,21 +41,13 @@
 
 <script setup>
 import { ref } from 'vue';
-
-defineProps({
-  currentPage: String,
-});
+import {createRouter as $router} from "vue-router";
 
 const isLoggedIn = ref(false);
-
-function navigateTo(page) {
-  $emit('changePage', page);
-}
 
 function signOut() {
   isLoggedIn.value = false;
 }
-
 </script>
 
 <style>
@@ -96,30 +68,25 @@ function signOut() {
 }
 
 .auth-button.login {
-  background-color: #2563eb; /* blue-600 */
+  background-color: #2563eb;
   color: white;
 }
-
 .auth-button.login:hover {
-  background-color: #1d4ed8; /* blue-700 */
+  background-color: #1d4ed8;
 }
-
 .auth-button.signup {
-  background-color: #10b981; /* green-500 */
+  background-color: #10b981;
   color: white;
 }
-
 .auth-button.signup:hover {
-  background-color: #059669; /* green-600 */
+  background-color: #059669;
 }
-
 .auth-button.signout {
-  background-color: #dc2626; /* red-600 */
+  background-color: #dc2626;
   color: white;
 }
-
 .auth-button.signout:hover {
-  background-color: #b91c1c; /* red-700 */
+  background-color: #b91c1c;
 }
 
 .navbar {
@@ -149,14 +116,6 @@ function signOut() {
 .logo {
   height: 200px;
   width: 200px;
-  color: #2563eb; /* blue-600 */
-}
-
-.brand-text {
-  margin-left: 8px;
-  font-size: 1.25rem;
-  font-weight: bold;
-  color: #111827; /* gray-900 */
 }
 
 .nav-links {
@@ -173,22 +132,20 @@ function signOut() {
 
 .nav-link {
   border-bottom: 2px solid transparent;
-  color: #6b7280; /* gray-500 */
+  color: #6b7280;
   font-size: 0.875rem;
   font-weight: 500;
   padding: 4px 0;
-  cursor: pointer;
-  background: none;
-  border: none;
+  text-decoration: none;
 }
 
 .nav-link:hover {
-  color: #374151; /* gray-700 */
-  border-bottom: 2px solid #d1d5db; /* gray-300 */
+  color: #374151;
+  border-bottom: 2px solid #d1d5db;
 }
 
 .nav-link.active {
-  border-bottom: 2px solid #3b82f6; /* blue-500 */
-  color: #111827; /* gray-900 */
+  border-bottom: 2px solid #3b82f6;
+  color: #111827;
 }
 </style>
