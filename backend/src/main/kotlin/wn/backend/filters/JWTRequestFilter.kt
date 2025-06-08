@@ -19,7 +19,7 @@ class JWTRequestFilter : OncePerRequestFilter() {
 
     private val excludedPaths = listOf(
         "/authentication/login",
-        "/authentication/register" // Add more public endpoints here if needed
+        "/authentication/register"
     )
 
     @Throws(ServletException::class, IOException::class)
@@ -30,7 +30,6 @@ class JWTRequestFilter : OncePerRequestFilter() {
     ) {
         val servletPath = request.servletPath
 
-        // Skip filter for OPTIONS requests or excluded public paths
         if ("OPTIONS".equals(request.method, ignoreCase = true) ||
             excludedPaths.any { servletPath.startsWith(it) }
         ) {
@@ -38,12 +37,10 @@ class JWTRequestFilter : OncePerRequestFilter() {
             return
         }
 
-        // If you have configured securedPaths, only enforce token on those paths
         val securedPaths = apiConfig?.securedPaths
         if (securedPaths != null && securedPaths.isNotEmpty()) {
             val isSecured = securedPaths.any { servletPath.startsWith(it) }
             if (!isSecured) {
-                // Path not secured, skip token check
                 chain.doFilter(request, response)
                 return
             }

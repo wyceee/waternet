@@ -29,7 +29,7 @@ class AuthenticationController {
 
         val expected = email.split("@".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()[0]
         if (expected != password) {
-            return ResponseEntity.status(406).build() // Return 406 status without throwing an exception
+            return ResponseEntity.status(406).build()
         }
 
         val user = User(random.nextLong(), expected, email, password, Role.USER)
