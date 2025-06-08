@@ -3,8 +3,7 @@
     <div class="container">
       <div class="nav-content">
         <div class="brand">
-          <Droplets class="logo" />
-          <span class="brand-text">AquaRewards</span>
+          <img src="@/assets/navbarlogo.png" alt="Logo" class="logo" />
         </div>
         <div class="nav-links">
           <button
@@ -80,8 +79,8 @@ import { Droplets, Wallet } from 'lucide-vue-next';
 }
 
 .logo {
-  height: 32px;
-  width: 32px;
+  height: 200px;
+  width: 200px;
   color: #2563eb; /* blue-600 */
 }
 
