@@ -29,7 +29,6 @@ const confirmPassword = ref('');
 const router = useRouter();
 
 function handleSignup() {
-  // Simulate signup logic
   if (password.value === confirmPassword.value) {
     alert('Signup successful!');
     router.push('/login');
@@ -40,7 +39,6 @@ function handleSignup() {
 </script>
 
 <style>
-/* Reuse the same styles as the Login component */
 .auth-container {
   max-width: 400px;
   margin: 0 auto;

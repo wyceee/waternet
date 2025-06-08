@@ -6,7 +6,8 @@
           <img src="@/assets/navbarlogo.png" alt="Logo" class="logo" />
         </div>
         <div class="nav-links">
-          <router-link to="/" class="nav-link" exact-active-class="active">Dashboard</router-link>
+          <router-link to="/" class="nav-link" exact-active-class="active">Home</router-link> <!-- Add Home link -->
+          <router-link to="/dashboard" class="nav-link" exact-active-class="active">Dashboard</router-link>
           <router-link to="/register" class="nav-link" exact-active-class="active">Register Measure</router-link>
           <router-link to="/supervisor" class="nav-link" exact-active-class="active">Supervisor Panel</router-link>
           <router-link to="/wallet" class="nav-link" exact-active-class="active">Wallet</router-link>
@@ -41,7 +42,6 @@
 
 <script setup>
 import { ref } from 'vue';
-import {createRouter as $router} from "vue-router";
 
 const isLoggedIn = ref(false);
 

@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router';
+import Home from '../components/Home.vue';
 import Dashboard from '../components/Dashboard.vue';
 import RegisterMeasure from '../components/RegisterMeasure.vue';
 import SupervisorPanel from '../components/SupervisorPanel.vue';
@@ -7,7 +8,8 @@ import Login from '../components/Login.vue';
 import Signup from '../components/Signup.vue';
 
 const routes = [
-    { path: '/', name: 'Dashboard', component: Dashboard },
+    { path: '/', name: 'Home', component: Home },
+    { path: '/dashboard', name: 'Dashboard', component: Dashboard },
     { path: '/register', name: 'RegisterMeasure', component: RegisterMeasure },
     { path: '/supervisor', name: 'SupervisorPanel', component: SupervisorPanel },
     { path: '/wallet', name: 'Wallet', component: Wallet },

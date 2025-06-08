@@ -1,4 +1,3 @@
-<!-- src/components/SupervisorPanel.vue -->
 <template>
   <div>
     <div class="header">
@@ -82,22 +81,22 @@ const approvals = [
 }
 
 .title {
-  font-size: 1.875rem; /* 3xl */
+  font-size: 1.875rem;
   font-weight: 700;
-  color: #111827; /* gray-900 */
+  color: #111827;
   margin: 0;
 }
 
 .subtitle {
   margin-top: 0.5rem;
-  color: #4b5563; /* gray-600 */
+  color: #4b5563;
   font-size: 1rem;
 }
 
 .panel {
   background-color: #ffffff;
   box-shadow: 0 1px 2px rgb(0 0 0 / 0.05);
-  border-radius: 0.375rem; /* rounded-md */
+  border-radius: 0.375rem;
   overflow: hidden;
 }
 
@@ -105,7 +104,7 @@ const approvals = [
   list-style: none;
   margin: 0;
   padding: 0;
-  border-top: 1px solid #e5e7eb; /* gray-200 */
+  border-top: 1px solid #e5e7eb;
 }
 
 .list-item {
@@ -113,7 +112,7 @@ const approvals = [
   justify-content: space-between;
   align-items: center;
   padding: 1.5rem 1.5rem;
-  border-bottom: 1px solid #e5e7eb; /* gray-200 */
+  border-bottom: 1px solid #e5e7eb;
 }
 
 .item-left {
@@ -123,9 +122,9 @@ const approvals = [
 }
 
 .icon-bg {
-  height: 3rem; /* 12 */
+  height: 3rem;
   width: 3rem;
-  border-radius: 9999px; /* full */
+  border-radius: 9999px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -133,32 +132,32 @@ const approvals = [
 }
 
 .icon-bg-blue {
-  background-color: #dbeafe; /* bg-blue-100 */
+  background-color: #dbeafe;
 }
 
 .icon-bg-green {
-  background-color: #d1fae5; /* bg-green-100 */
+  background-color: #d1fae5;
 }
 
 .icon-bg-purple {
-  background-color: #ede9fe; /* bg-purple-100 */
+  background-color: #ede9fe;
 }
 
 .icon {
-  height: 1.5rem; /* 6 */
+  height: 1.5rem;
   width: 1.5rem;
 }
 
 .icon-blue {
-  color: #2563eb; /* text-blue-600 */
+  color: #2563eb;
 }
 
 .icon-green {
-  color: #16a34a; /* text-green-600 */
+  color: #16a34a;
 }
 
 .icon-purple {
-  color: #7c3aed; /* text-purple-600 */
+  color: #7c3aed;
 }
 
 .item-content {
@@ -167,20 +166,20 @@ const approvals = [
 }
 
 .item-title {
-  font-size: 1.125rem; /* lg */
+  font-size: 1.125rem;
   font-weight: 500;
-  color: #111827; /* gray-900 */
+  color: #111827;
 }
 
 .item-submitter {
-  font-size: 0.875rem; /* sm */
-  color: #6b7280; /* gray-500 */
+  font-size: 0.875rem;
+  color: #6b7280;
   margin-top: 0.25rem;
 }
 
 .item-details {
   font-size: 0.875rem;
-  color: #4b5563; /* gray-600 */
+  color: #4b5563;
   margin-top: 0.25rem;
 }
 
@@ -204,35 +203,35 @@ const approvals = [
 }
 
 .btn-icon {
-  height: 1rem; /* 4 */
+  height: 1rem;
   width: 1rem;
   margin-right: 0.25rem;
 }
 
 .btn.approve {
   color: #ffffff;
-  background-color: #16a34a; /* green-600 */
+  background-color: #16a34a;
   box-shadow: 0 0 0 2px transparent;
 }
 
 .btn.approve:hover {
-  background-color: #15803d; /* green-700 */
+  background-color: #15803d;
 }
 
 .btn.approve:focus {
-  box-shadow: 0 0 0 2px #4ade80; /* green-500 ring */
+  box-shadow: 0 0 0 2px #4ade80;
 }
 
 .btn.reject {
   color: #ffffff;
-  background-color: #dc2626; /* red-600 */
+  background-color: #dc2626;
 }
 
 .btn.reject:hover {
-  background-color: #b91c1c; /* red-700 */
+  background-color: #b91c1c;
 }
 
 .btn.reject:focus {
-  box-shadow: 0 0 0 2px #f87171; /* red-500 ring */
+  box-shadow: 0 0 0 2px #f87171;
 }
 </style>

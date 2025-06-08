@@ -5,7 +5,6 @@
       <p class="dashboard-subtitle">Track your water retention measures and rewards</p>
     </div>
 
-    <!-- Stats Cards -->
     <div class="stats-grid">
       <div class="card">
         <div class="card-content">
@@ -64,7 +63,7 @@
             <div class="text-wrapper">
               <dl>
                 <dt class="label">Tokens Earned</dt>
-                <dd class="value">1,250 AQR</dd>
+                <dd class="value">1,250 HYD</dd>
               </dl>
             </div>
           </div>
@@ -72,7 +71,6 @@
       </div>
     </div>
 
-    <!-- Recent Measures -->
     <div class="recent-measures">
       <div class="recent-header">
         <h3 class="recent-title">Your Recent Measures</h3>
@@ -132,15 +130,15 @@ import { BarChart3, CheckCircle, Clock, Coins, Droplets, Leaf, TreePine } from '
 }
 
 .dashboard-title {
-  font-size: 1.875rem; /* 3xl */
+  font-size: 1.875rem;
   font-weight: 700;
-  color: #111827; /* gray-900 */
+  color: #111827;
   margin: 0;
 }
 
 .dashboard-subtitle {
   margin-top: 8px;
-  color: #4b5563; /* gray-600 */
+  color: #4b5563;
   font-size: 1rem;
 }
 
@@ -168,7 +166,7 @@ import { BarChart3, CheckCircle, Clock, Coins, Droplets, Leaf, TreePine } from '
   overflow: hidden;
   box-shadow: 0 1px 3px rgb(0 0 0 / 0.1),
   0 1px 2px rgb(0 0 0 / 0.06);
-  border-radius: 0.5rem; /* rounded-lg */
+  border-radius: 0.5rem;
 }
 
 .card-content {
@@ -188,23 +186,23 @@ import { BarChart3, CheckCircle, Clock, Coins, Droplets, Leaf, TreePine } from '
 }
 
 .gray-icon {
-  color: #9ca3af; /* gray-400 */
+  color: #9ca3af;
 }
 
 .green-icon {
-  color: #34d399; /* green-400 */
+  color: #34d399;
 }
 
 .yellow-icon {
-  color: #fbbf24; /* yellow-400 */
+  color: #fbbf24;
 }
 
 .blue-icon {
-  color: #60a5fa; /* blue-400 */
+  color: #60a5fa;
 }
 
 .icon {
-  width: 24px; /* 6 */
+  width: 24px;
   height: 24px;
 }
 
@@ -215,9 +213,9 @@ import { BarChart3, CheckCircle, Clock, Coins, Droplets, Leaf, TreePine } from '
 }
 
 .label {
-  font-size: 0.875rem; /* text-sm */
+  font-size: 0.875rem;
   font-weight: 500;
-  color: #6b7280; /* gray-500 */
+  color: #6b7280;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -225,20 +223,18 @@ import { BarChart3, CheckCircle, Clock, Coins, Droplets, Leaf, TreePine } from '
 }
 
 .value {
-  font-size: 1.125rem; /* text-lg */
+  font-size: 1.125rem;
   font-weight: 500;
-  color: #111827; /* gray-900 */
+  color: #111827;
   margin: 0;
 }
-
-/* Recent Measures */
 
 .recent-measures {
   background-color: #fff;
   box-shadow: 0 1px 3px rgb(0 0 0 / 0.1),
   0 1px 2px rgb(0 0 0 / 0.06);
   overflow: hidden;
-  border-radius: 0.375rem; /* rounded-md */
+  border-radius: 0.375rem;
 }
 
 .recent-header {
@@ -246,18 +242,18 @@ import { BarChart3, CheckCircle, Clock, Coins, Droplets, Leaf, TreePine } from '
 }
 
 .recent-title {
-  font-size: 1.125rem; /* lg */
+  font-size: 1.125rem;
   font-weight: 500;
-  color: #111827; /* gray-900 */
+  color: #111827;
   margin: 0;
-  line-height: 1.5rem; /* leading-6 */
+  line-height: 1.5rem;
 }
 
 .recent-subtitle {
   margin-top: 4px;
-  max-width: 32rem; /* max-w-2xl */
-  font-size: 0.875rem; /* sm */
-  color: #6b7280; /* gray-500 */
+  max-width: 32rem;
+  font-size: 0.875rem;
+  color: #6b7280;
   margin-bottom: 0;
 }
 
@@ -265,7 +261,7 @@ import { BarChart3, CheckCircle, Clock, Coins, Droplets, Leaf, TreePine } from '
   list-style: none;
   margin: 0;
   padding: 0;
-  border-top: 1px solid #e5e7eb; /* divide-gray-200 */
+  border-top: 1px solid #e5e7eb;
 }
 
 .measure-item {
@@ -273,7 +269,7 @@ import { BarChart3, CheckCircle, Clock, Coins, Droplets, Leaf, TreePine } from '
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid #e5e7eb; /* divide-gray-200 */
+  border-bottom: 1px solid #e5e7eb;
 }
 
 .measure-info {
@@ -285,22 +281,22 @@ import { BarChart3, CheckCircle, Clock, Coins, Droplets, Leaf, TreePine } from '
   flex-shrink: 0;
   width: 40px;
   height: 40px;
-  border-radius: 9999px; /* full */
+  border-radius: 9999px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .green-bg {
-  background-color: #d1fae5; /* green-100 */
+  background-color: #d1fae5;
 }
 
 .blue-bg {
-  background-color: #bfdbfe; /* blue-100 */
+  background-color: #bfdbfe;
 }
 
 .purple-bg {
-  background-color: #e9d5ff; /* purple-100 */
+  background-color: #e9d5ff;
 }
 
 .avatar-icon {
@@ -309,15 +305,15 @@ import { BarChart3, CheckCircle, Clock, Coins, Droplets, Leaf, TreePine } from '
 }
 
 .green-icon-dark {
-  color: #059669; /* green-600 */
+  color: #059669;
 }
 
 .blue-icon-dark {
-  color: #2563eb; /* blue-600 */
+  color: #2563eb;
 }
 
 .purple-icon-dark {
-  color: #7c3aed; /* purple-600 */
+  color: #7c3aed;
 }
 
 .measure-text {
@@ -339,22 +335,22 @@ import { BarChart3, CheckCircle, Clock, Coins, Droplets, Leaf, TreePine } from '
 
 .status {
   padding: 2px 8px;
-  font-size: 0.75rem; /* text-xs */
-  line-height: 1.25rem; /* leading-5 */
+  font-size: 0.75rem;
+  line-height: 1.25rem;
   font-weight: 600;
-  border-radius: 9999px; /* rounded-full */
+  border-radius: 9999px;
   display: inline-flex;
   align-items: center;
   white-space: nowrap;
 }
 
 .approved {
-  background-color: #d1fae5; /* green-100 */
-  color: #065f46; /* green-800 */
+  background-color: #d1fae5;
+  color: #065f46;
 }
 
 .pending {
-  background-color: #fef3c7; /* yellow-100 */
-  color: #92400e; /* yellow-800 */
+  background-color: #fef3c7;
+  color: #92400e;
 }
 </style>

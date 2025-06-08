@@ -110,28 +110,20 @@ const form = ref(createMeasure(currentUserId));
 form.value.measureType = 'Green Roof';
 form.value.area = null;
 form.value.capacity = null;
-form.value.files = []; // this is only for client-side use
+form.value.files = [];
 
-/**
- * Handles file upload from the input.
- * Converts the first image to a base64 string for preview/storage.
- */
 function handleFileUpload(event) {
   const files = Array.from(event.target.files);
   const reader = new FileReader();
 
   reader.onloadend = () => {
-    form.value.photoUrl = reader.result; // Save base64 image
-    form.value.files = files; // Keep files in memory (optional)
+    form.value.photoUrl = reader.result;
+    form.value.files = files;
   };
 
   if (files[0]) reader.readAsDataURL(files[0]);
 }
 
-/**
- * Handles the form submission.
- * Validates the data and triggers the backend or blockchain logic.
- */
 function submitForm() {
   const errors = validateMeasure(form.value);
   if (errors.length > 0) {
@@ -139,7 +131,7 @@ function submitForm() {
     return;
   }
 
-  // Submit to backend API or smart contract (placeholder)
+
   console.log('Submitted measure:', form.value);
   alert('Submitted for supervisor approval!');
 }
@@ -151,22 +143,22 @@ function submitForm() {
 }
 
 .register-title {
-  font-size: 1.875rem; /* 3xl */
+  font-size: 1.875rem;
   font-weight: 700;
-  color: #111827; /* gray-900 */
+  color: #111827;
   margin: 0;
 }
 
 .register-subtitle {
   margin-top: 0.5rem;
-  color: #4b5563; /* gray-600 */
+  color: #4b5563;
   font-size: 1rem;
 }
 
 .register-card {
   background: #fff;
   box-shadow: 0 1px 2px rgb(0 0 0 / 0.05);
-  border-radius: 0.5rem; /* rounded-lg */
+  border-radius: 0.5rem;
 }
 
 .register-card-content {
@@ -187,15 +179,15 @@ function submitForm() {
 .form-label {
   font-size: 0.875rem;
   font-weight: 500;
-  color: #374151; /* gray-700 */
+  color: #374151;
   margin-bottom: 0.25rem;
 }
 
 .form-select,
 .form-input,
 .form-textarea {
-  border: 1px solid #d1d5db; /* gray-300 */
-  border-radius: 0.375rem; /* rounded-md */
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
   padding: 0.5rem 0.75rem;
   font-size: 0.875rem;
   color: #111827;
@@ -206,14 +198,14 @@ function submitForm() {
 .form-select:focus,
 .form-input:focus,
 .form-textarea:focus {
-  border-color: #3b82f6; /* blue-500 */
+  border-color: #3b82f6;
   box-shadow: 0 0 0 2px rgb(59 130 246 / 0.5);
   outline: none;
 }
 
 .form-textarea {
   resize: vertical;
-  min-height: 6rem; /* 4 rows approx */
+  min-height: 6rem;
 }
 
 .form-grid {
@@ -231,7 +223,7 @@ function submitForm() {
 .upload-area {
   margin-top: 0.25rem;
   padding: 1.25rem 1.5rem 1.5rem;
-  border: 2px dashed #d1d5db; /* gray-300 */
+  border: 2px dashed #d1d5db;
   border-radius: 0.375rem;
   display: flex;
   justify-content: center;
@@ -247,7 +239,7 @@ function submitForm() {
 .upload-icon {
   height: 3rem;
   width: 3rem;
-  color: #9ca3af; /* gray-400 */
+  color: #9ca3af;
   margin: 0 auto;
 }
 
@@ -256,7 +248,7 @@ function submitForm() {
   justify-content: center;
   gap: 0.25rem;
   font-size: 0.875rem;
-  color: #4b5563; /* gray-600 */
+  color: #4b5563;
   align-items: center;
 }
 
@@ -265,14 +257,14 @@ function submitForm() {
   background: white;
   border-radius: 0.375rem;
   font-weight: 500;
-  color: #2563eb; /* blue-600 */
+  color: #2563eb;
   padding: 0.125rem 0.5rem;
   user-select: none;
   transition: color 0.2s ease;
 }
 
 .upload-label:hover {
-  color: #1e40af; /* blue-700 */
+  color: #1e40af;
 }
 
 .upload-label:focus-within {
@@ -298,7 +290,7 @@ function submitForm() {
 
 .upload-info {
   font-size: 0.75rem;
-  color: #6b7280; /* gray-500 */
+  color: #6b7280;
 }
 
 .form-actions {
@@ -312,7 +304,7 @@ function submitForm() {
   font-size: 0.875rem;
   font-weight: 500;
   color: white;
-  background-color: #2563eb; /* blue-600 */
+  background-color: #2563eb;
   border: none;
   border-radius: 0.375rem;
   box-shadow: 0 1px 2px rgb(37 99 235 / 0.5);
@@ -321,7 +313,7 @@ function submitForm() {
 }
 
 .submit-button:hover {
-  background-color: #1e40af; /* blue-700 */
+  background-color: #1e40af;
 }
 
 .submit-button:focus {

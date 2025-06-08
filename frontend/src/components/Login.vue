@@ -24,7 +24,6 @@ const password = ref('');
 const router = useRouter();
 
 function handleLogin() {
-  // Simulate login logic
   if (email.value && password.value) {
     alert('Login successful!');
     router.push('/');
