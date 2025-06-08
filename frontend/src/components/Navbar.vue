@@ -12,20 +12,20 @@
           <router-link to="/wallet" class="nav-link" exact-active-class="active">Wallet</router-link>
         </div>
         <div class="auth-buttons">
-          <button
+          <router-link
               v-if="!isLoggedIn"
-              @click="$router.push('/login')"
+              to="/login"
               class="auth-button login"
           >
             Login
-          </button>
-          <button
+          </router-link>
+          <router-link
               v-if="!isLoggedIn"
-              @click="$router.push('/signup')"
+              to="/signup"
               class="auth-button signup"
           >
             Signup
-          </button>
+          </router-link>
           <button
               v-if="isLoggedIn"
               @click="signOut"
