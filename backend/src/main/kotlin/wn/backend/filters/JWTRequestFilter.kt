@@ -17,34 +17,55 @@ class JWTRequestFilter : OncePerRequestFilter() {
     @Autowired
     private val apiConfig: APIConfig? = null
 
+    private val excludedPaths = listOf(
+        "/authentication/login",
+        "/authentication/register" // Add more public endpoints here if needed
+    )
+
     @Throws(ServletException::class, IOException::class)
-    override fun doFilterInternal(request: HttpServletRequest, response: HttpServletResponse, chain: FilterChain) {
+    override fun doFilterInternal(
+        request: HttpServletRequest,
+        response: HttpServletResponse,
+        chain: FilterChain
+    ) {
         val servletPath = request.servletPath
 
+        // Skip filter for OPTIONS requests or excluded public paths
         if ("OPTIONS".equals(request.method, ignoreCase = true) ||
-            apiConfig?.securedPaths?.none { servletPath.startsWith(it) } == true
+            excludedPaths.any { servletPath.startsWith(it) }
         ) {
             chain.doFilter(request, response)
             return
         }
 
-        val encryptedToken = request.getHeader(HttpHeaders.AUTHORIZATION)
+        // If you have configured securedPaths, only enforce token on those paths
+        val securedPaths = apiConfig?.securedPaths
+        if (securedPaths != null && securedPaths.isNotEmpty()) {
+            val isSecured = securedPaths.any { servletPath.startsWith(it) }
+            if (!isSecured) {
+                // Path not secured, skip token check
+                chain.doFilter(request, response)
+                return
+            }
+        }
 
-        if (encryptedToken == null) {
+        val authHeader = request.getHeader(HttpHeaders.AUTHORIZATION)
+
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "No token provided. You need to logon first.")
             return
         }
 
-        val jwToken: JWToken
+        val tokenString = authHeader.substringAfter("Bearer ").trim()
         try {
             val passPhrase = apiConfig?.passPhrase ?: throw IllegalStateException("Passphrase is not configured")
-            jwToken = JWToken.decode(encryptedToken.replace("Bearer ", ""), passPhrase)
+            val jwToken = JWToken.decode(tokenString, passPhrase)
+            request.setAttribute(JWToken.JWT_ATTRIBUTE_NAME, jwToken)
         } catch (e: Exception) {
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid token: " + e.message)
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid token: ${e.message}")
             return
         }
 
-        request.setAttribute(JWToken.JWT_ATTRIBUTE_NAME, jwToken)
         chain.doFilter(request, response)
     }
 }
