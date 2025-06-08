@@ -102,23 +102,49 @@
 <script setup>
 import { ref } from 'vue';
 import { Upload } from 'lucide-vue-next';
+import { createMeasure, validateMeasure } from '@/models/measure.js';
 
-const form = ref({
-  measureType: 'Green Roof',
-  description: '',
-  area: null,
-  capacity: null,
-  location: '',
-  files: [],
-});
+// Simulated user wallet address (should come from authentication or connected wallet)
+const currentUserAddress = '0xabc123';
 
+// Initialize the form data using the model
+const form = ref(createMeasure(currentUserAddress));
+
+form.value.measureType = 'Green Roof';
+form.value.area = null;
+form.value.capacity = null;
+form.value.files = []; // this is only for client-side use
+
+/**
+ * Handles file upload from the input.
+ * Converts the first image to a base64 string for preview/storage.
+ */
 function handleFileUpload(event) {
-  form.value.files = Array.from(event.target.files);
+  const files = Array.from(event.target.files);
+  const reader = new FileReader();
+
+  reader.onloadend = () => {
+    form.value.photoUrl = reader.result; // Save base64 image
+    form.value.files = files; // Keep files in memory (optional)
+  };
+
+  if (files[0]) reader.readAsDataURL(files[0]);
 }
 
+/**
+ * Handles the form submission.
+ * Validates the data and triggers the backend or blockchain logic.
+ */
 function submitForm() {
-  // Simple form submission placeholder, e.g. emit event or API call
-  alert('Form submitted:\n' + JSON.stringify(form.value, null, 2));
+  const errors = validateMeasure(form.value);
+  if (errors.length > 0) {
+    alert('Form errors:\n' + errors.join('\n'));
+    return;
+  }
+
+  // Submit to backend API or smart contract (placeholder)
+  console.log('Submitted measure:', form.value);
+  alert('Submitted for supervisor approval!');
 }
 </script>
 
