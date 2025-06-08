@@ -1,18 +1,22 @@
 /**
  * Factory function to create a new measure object.
- * @param {string} userAddress - The blockchain wallet address of the user.
+ * @param {null} userId - The id of the user.
  * @returns {Object} - A new measure object.
  */
-export function createMeasure(userAddress = '') {
+export function createMeasure(userId = null) {
     return {
-        id: null, // can be set by backend or generated with uuid
-        userAddress: userAddress,
+        id: null,
+        userId: userId,
         description: '',
         photoUrl: '',
         location: '',
         timestamp: new Date().toISOString(),
-        status: 'PENDING', // or 'APPROVED' | 'REJECTED'
-        supervisorComment: ''
+        status: 'PENDING',
+        supervisorComment: '',
+        measureType: '',
+        area: null,
+        capacity: null,
+        files: [] // frontend only
     };
 }
 

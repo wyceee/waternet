@@ -104,11 +104,8 @@ import { ref } from 'vue';
 import { Upload } from 'lucide-vue-next';
 import { createMeasure, validateMeasure } from '@/models/measure.js';
 
-// Simulated user wallet address (should come from authentication or connected wallet)
-const currentUserAddress = '0xabc123';
-
-// Initialize the form data using the model
-const form = ref(createMeasure(currentUserAddress));
+const currentUserId = 1;
+const form = ref(createMeasure(currentUserId));
 
 form.value.measureType = 'Green Roof';
 form.value.area = null;
