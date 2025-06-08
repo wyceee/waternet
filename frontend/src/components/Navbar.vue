@@ -31,13 +31,27 @@
             Wallet
           </button>
         </div>
-        <div class="wallet-button">
+        <div class="auth-buttons">
           <button
-              @click="$emit('toggleWallet')"
-              :class="isWalletConnected ? 'wallet connected' : 'wallet connect'"
+              v-if="!isLoggedIn"
+              @click="navigateTo('login')"
+              class="auth-button login"
           >
-            <Wallet class="wallet-icon" />
-            {{ isWalletConnected ? 'Connected' : 'Connect Wallet' }}
+            Login
+          </button>
+          <button
+              v-if="!isLoggedIn"
+              @click="navigateTo('signup')"
+              class="auth-button signup"
+          >
+            Signup
+          </button>
+          <button
+              v-if="isLoggedIn"
+              @click="signOut"
+              class="auth-button signout"
+          >
+            Signout
           </button>
         </div>
       </div>
@@ -46,14 +60,68 @@
 </template>
 
 <script setup>
+import { ref } from 'vue';
+
 defineProps({
   currentPage: String,
-  isWalletConnected: Boolean
 });
-import { Droplets, Wallet } from 'lucide-vue-next';
+
+const isLoggedIn = ref(false);
+
+function navigateTo(page) {
+  $emit('changePage', page);
+}
+
+function signOut() {
+  isLoggedIn.value = false;
+}
+
 </script>
 
 <style>
+.auth-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.auth-button {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.auth-button.login {
+  background-color: #2563eb; /* blue-600 */
+  color: white;
+}
+
+.auth-button.login:hover {
+  background-color: #1d4ed8; /* blue-700 */
+}
+
+.auth-button.signup {
+  background-color: #10b981; /* green-500 */
+  color: white;
+}
+
+.auth-button.signup:hover {
+  background-color: #059669; /* green-600 */
+}
+
+.auth-button.signout {
+  background-color: #dc2626; /* red-600 */
+  color: white;
+}
+
+.auth-button.signout:hover {
+  background-color: #b91c1c; /* red-700 */
+}
+
 .navbar {
   background-color: white;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
@@ -122,44 +190,5 @@ import { Droplets, Wallet } from 'lucide-vue-next';
 .nav-link.active {
   border-bottom: 2px solid #3b82f6; /* blue-500 */
   color: #111827; /* gray-900 */
-}
-
-.wallet-button {
-  display: flex;
-  align-items: center;
-}
-
-.wallet {
-  display: inline-flex;
-  align-items: center;
-  padding: 8px 16px;
-  border: none;
-  border-radius: 6px;
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: white;
-  cursor: pointer;
-}
-
-.wallet.connect {
-  background-color: #2563eb; /* blue-600 */
-}
-
-.wallet.connect:hover {
-  background-color: #1d4ed8; /* blue-700 */
-}
-
-.wallet.connected {
-  background-color: #16a34a; /* green-600 */
-}
-
-.wallet.connected:hover {
-  background-color: #15803d; /* green-700 */
-}
-
-.wallet-icon {
-  height: 16px;
-  width: 16px;
-  margin-right: 8px;
 }
 </style>
