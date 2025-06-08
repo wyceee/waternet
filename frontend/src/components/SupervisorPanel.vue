@@ -1,6 +1,6 @@
 <!-- src/components/SupervisorPanel.vue -->
 <template>
-  <div class="container">
+  <div>
     <div class="header">
       <h1 class="title">Supervisor Approval Panel</h1>
       <p class="subtitle">Review and approve water retention measures</p>
@@ -77,10 +77,6 @@ const approvals = [
 </script>
 
 <style scoped>
-.container {
-  margin: 3rem 30rem;
-}
-
 .header {
   margin-bottom: 2rem;
 }

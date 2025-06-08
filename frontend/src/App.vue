@@ -48,5 +48,12 @@ body {
 
 .main-container {
   flex: 1;
+  margin: 3rem 2rem; /* Default margin for smaller screens */
+}
+
+@media (min-width: 1440px) {
+  .main-container {
+    margin: 3rem 15rem; /* Extra-large screens */
+  }
 }
 </style>

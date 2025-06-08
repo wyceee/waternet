@@ -1,5 +1,5 @@
 <template>
-  <div class="dashboard-container">
+  <div>
     <div class="header-section">
       <h1 class="dashboard-title">Dashboard</h1>
       <p class="dashboard-subtitle">Track your water retention measures and rewards</p>
@@ -123,17 +123,6 @@
 </template>
 
 <style>
-.dashboard-container {
-  margin: 3rem 30rem;
-}
-
-@media (min-width: 640px) {
-  .dashboard-container {
-    padding-left: 0;
-    padding-right: 0;
-  }
-}
-
 .header-section {
   margin-bottom: 32px;
 }

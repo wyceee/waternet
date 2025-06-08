@@ -1,5 +1,5 @@
 <template>
-  <div class="register-container">
+  <div>
     <div class="register-header">
       <h1 class="register-title">Register Water Retention Measure</h1>
       <p class="register-subtitle">Submit a new water retention measure for approval</p>
@@ -123,10 +123,6 @@ function submitForm() {
 </script>
 
 <style scoped>
-.register-container {
-  margin: 3rem 30rem;
-}
-
 .register-header {
   margin-bottom: 2rem;
 }

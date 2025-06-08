@@ -1,6 +1,6 @@
 <!-- src/components/Wallet.vue -->
 <template>
-  <div class="container">
+  <div>
     <div class="header">
       <h1 class="title">Wallet</h1>
       <p class="subtitle">Manage your AquaRewards tokens</p>
@@ -60,10 +60,6 @@ const transactions = [
 </script>
 
 <style scoped>
-.container {
-  margin: 3rem 30rem;
-}
-
 .header {
   margin-bottom: 2rem;
 }
