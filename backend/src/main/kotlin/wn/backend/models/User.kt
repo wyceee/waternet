@@ -19,7 +19,13 @@ data class User(
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    var role: Role = Role.USER
+    var role: Role = Role.USER,
+
+    @OneToMany(mappedBy = "user", cascade = [CascadeType.ALL], orphanRemoval = true)
+    val measures: MutableList<Measure> = mutableListOf(),
+
+    @Column(nullable = false, unique = true, length = 42)
+    var wallet: String // VeChain wallet address
 )
 
 enum class Role {

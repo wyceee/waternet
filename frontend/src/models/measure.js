@@ -12,7 +12,6 @@ export function createMeasure(userId = null) {
         location: '',
         timestamp: new Date().toISOString(),
         status: 'PENDING',
-        supervisorComment: '',
         measureType: '',
         area: null,
         capacity: null,
