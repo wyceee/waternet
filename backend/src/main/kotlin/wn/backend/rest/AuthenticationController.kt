@@ -3,6 +3,7 @@ package wn.backend.rest
 import com.fasterxml.jackson.databind.node.ObjectNode
 import wn.backend.APIConfig
 import wn.backend.models.User
+import wn.backend.models.Role
 import wn.backend.utils.JWToken
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpHeaders
@@ -11,7 +12,6 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import wn.backend.models.Role
 import java.util.*
 
 @RestController
@@ -32,7 +32,15 @@ class AuthenticationController {
             return ResponseEntity.status(406).build()
         }
 
-        val user = User(random.nextLong(), expected, email, password, Role.USER)
+        val wallet = "0x" + UUID.randomUUID().toString().replace("-", "").take(40)
+        val user = User(
+            id = random.nextLong(),
+            name = expected,
+            email = email,
+            hashedPassword = password,
+            role = Role.USER,
+            wallet = wallet
+        )
 
         val token = JWToken(user.name, user.id!!, user.role)
         val tokenString = token.encode(
