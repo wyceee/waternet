@@ -18,10 +18,10 @@ class SecurityConfig {
             .cors { }
             .authorizeHttpRequests { requests ->
                 requests
-                    .requestMatchers("/authentication/login", "/h2-console/**").permitAll() // Allow access to /h2-console
+                    .requestMatchers("/authentication/login", "/h2-console/**").permitAll()
                     .anyRequest().authenticated()
             }
-            .headers { it.frameOptions().disable() } // Allow H2 console to render frames
+            .headers { it.frameOptions().disable() }
             .httpBasic { it.disable() }
             .formLogin { it.disable() }
 
