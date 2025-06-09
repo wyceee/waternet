@@ -1,5 +1,6 @@
 package wn.backend.models
 
+import com.fasterxml.jackson.annotation.JsonManagedReference
 import jakarta.persistence.*
 
 @Entity
@@ -23,6 +24,7 @@ data class User(
     var role: Role = Role.USER,
 
     @OneToMany(mappedBy = "user", cascade = [CascadeType.ALL], orphanRemoval = true)
+    @JsonManagedReference
     val measures: MutableList<Measure> = mutableListOf(),
 
     @Column(nullable = false, unique = true, length = 42)

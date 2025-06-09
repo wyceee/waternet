@@ -1,5 +1,6 @@
 package wn.backend.models
 
+import com.fasterxml.jackson.annotation.JsonBackReference
 import jakarta.persistence.*
 import java.time.Instant
 
@@ -11,6 +12,7 @@ data class Measure(
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "user_id", nullable = false)
+    @JsonBackReference
     val user: User,
 
     @Column(nullable = false)

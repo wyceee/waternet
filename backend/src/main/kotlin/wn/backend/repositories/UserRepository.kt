@@ -12,13 +12,10 @@ import java.util.Optional
 @Repository
 interface UserRepository : JpaRepository<User, Long> {
 
-    // Find all users
     override fun findAll(): List<User>
 
-    // Find user by ID
     override fun findById(id: Long): Optional<User>
 
-    // Change the role of a user
     @Modifying
     @Transactional
     @Query("UPDATE User u SET u.role = :role WHERE u.id = :id")

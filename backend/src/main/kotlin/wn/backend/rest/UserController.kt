@@ -9,17 +9,14 @@ import wn.backend.repositories.UserRepositoryJPA
 @RestController
 @RequestMapping("/api/users")
 class UserController(
-    private val userRepositoryJPA: UserRepositoryJPA
-) {
+    private val userRepositoryJPA: UserRepositoryJPA) {
 
-    // Get all users
     @GetMapping
     fun getAllUsers(): ResponseEntity<List<User>> {
         val users = userRepositoryJPA.findAll()
         return ResponseEntity.ok(users)
     }
 
-    // Get user by ID
     @GetMapping("/{id}")
     fun getUserById(@PathVariable id: Long): ResponseEntity<User> {
         val user = userRepositoryJPA.findById(id)
@@ -30,14 +27,6 @@ class UserController(
         }
     }
 
-    // Create a new user
-    @PostMapping
-    fun createUser(@RequestBody user: User): ResponseEntity<User> {
-        val createdUser = userRepositoryJPA.createUser(user)
-        return ResponseEntity.ok(createdUser)
-    }
-
-    // Change the role of a user
     @PutMapping("/{id}/role")
     fun changeUserRole(@PathVariable id: Long, @RequestParam role: Role): ResponseEntity<String> {
         return if (userRepositoryJPA.changeRole(id, role)) {

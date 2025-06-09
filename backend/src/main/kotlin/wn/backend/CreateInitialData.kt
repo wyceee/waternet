@@ -1,8 +1,10 @@
 package wn.backend
 
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.CommandLineRunner
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.security.crypto.password.PasswordEncoder
 import wn.backend.models.Measure
 import wn.backend.models.User
 import wn.backend.models.Role
@@ -14,17 +16,20 @@ import java.time.Instant
 @Configuration
 class CreateInitialData {
 
+    @Autowired
+    lateinit var passwordEncoder: PasswordEncoder
+
     @Bean
     fun initData(
         userRepository: UserRepository,
         measureRepository: MeasureRepository
     ): CommandLineRunner {
         return CommandLineRunner {
-            // Create dummy users
+
             val user1 = User(
                 name = "John Doe",
                 email = "john.doe@example.com",
-                hashedPassword = "hashedpassword123",
+                hashedPassword = passwordEncoder.encode("hashedpassword123"),
                 role = Role.USER,
                 wallet = "0x1234567890abcdef1234567890abcdef12345678"
             )
@@ -32,14 +37,13 @@ class CreateInitialData {
             val user2 = User(
                 name = "Jane Smith",
                 email = "jane.smith@example.com",
-                hashedPassword = "hashedpassword456",
+                hashedPassword = passwordEncoder.encode("hashedpassword456"),
                 role = Role.SUPERVISOR,
                 wallet = "0xabcdef1234567890abcdef1234567890abcdef12"
             )
 
             userRepository.saveAll(listOf(user1, user2))
 
-            // Create dummy measures
             val measure1 = Measure(
                 user = user1,
                 description = "Green Roof Installation",
