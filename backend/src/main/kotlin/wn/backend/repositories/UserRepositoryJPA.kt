@@ -18,10 +18,6 @@ class UserRepositoryJPA(
         return userRepository.findById(id)
     }
 
-    fun createUser(user: User): User {
-        return userRepository.save(user)
-    }
-
     fun changeRole(id: Long, role: Role): Boolean {
         return userRepository.changeRole(id, role) > 0
     }
