@@ -33,6 +33,5 @@ data class User(
 
 enum class Role {
     USER,
-    SUPERVISOR,
-    ADMIN
+    SUPERVISOR
 }

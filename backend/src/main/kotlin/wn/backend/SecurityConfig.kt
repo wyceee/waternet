@@ -25,6 +25,7 @@ class SecurityConfig {
                 requests
                     .requestMatchers("/authentication/**", "/h2-console/**").permitAll()
                     .requestMatchers("/api/users/**").hasAnyRole("SUPERVISOR", "USER")
+                    .requestMatchers("/api/measures/*/approve", "/api/measures/*/reject").hasRole("SUPERVISOR")
                     .requestMatchers("/api/measures/**").hasAnyRole("SUPERVISOR", "USER")
             }
             .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter::class.java)

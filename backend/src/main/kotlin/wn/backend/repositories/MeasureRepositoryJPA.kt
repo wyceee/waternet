@@ -24,12 +24,4 @@ class MeasureRepositoryJPA(
     fun save(measure: Measure): Measure {
         return measureRepository.save(measure)
     }
-
-    fun approve(id: Long): Boolean {
-        return measureRepository.approve(id) > 0
-    }
-
-    fun reject(id: Long): Boolean {
-        return measureRepository.reject(id) > 0
-    }
 }
