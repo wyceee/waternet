@@ -7,7 +7,7 @@ import Wallet from '../components/Wallet.vue';
 import Login from '../components/Login.vue';
 import Signup from '../components/Signup.vue';
 import { reactive } from 'vue';
-import { sessionService } from '../App.vue'; // Import the globally provided sessionService
+import { sessionService } from '../services/Session.js';
 
 const routes = [
     { path: '/', name: 'Home', component: Home },
@@ -32,23 +32,20 @@ router.beforeEach((to, from, next) => {
     const isAuthenticated = reactiveSessionService.isAuthenticated();
 
     if (!isAuthenticated && to.path !== '/' && to.path !== '/login' && to.path !== '/signup') {
-        // Redirect unauthenticated users to the homepage
         return next('/');
     }
 
     if (isAuthenticated) {
         if (user.role === 'USER' && to.path === '/supervisor') {
-            // Prevent USER role from accessing the supervisor panel
             return next('/');
         }
 
         if (user.role === 'SUPERVISOR' && to.path !== '/supervisor' && to.path !== '/') {
-            // Prevent SUPERVISOR role from accessing other pages
             return next('/supervisor');
         }
     }
 
-    next(); // Allow navigation
+    next();
 });
 
 export default router;

@@ -16,35 +16,46 @@ export class SessionService {
         this.getTokenFromBrowserStorage();
     }
 
-    async signIn(email, password) /* : Promise<User> */ {
-        const body = JSON.stringify({ email: email, password: password });
-        let response = await fetch(this.RESOURCES_URL + "/login", {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: body,
-            credentials: 'include',
-        });
+    async signIn(email, password) {
+        try {
+            const body = JSON.stringify({ email, password });
 
-        if (response.ok) {
-            let user = await response.json();
-            this.saveTokenIntoBrowserStorage(
-                response.headers.get('Authorization'),
-                user
-            );
+            const response = await fetch(`${this.RESOURCES_URL}/login`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body,
+                credentials: 'include',
+            });
+
+            if (!response.ok) {
+                console.error('Login failed:', response.status, response.statusText);
+                return null;
+            }
+
+            const user = await response.json();
+            const token = response.headers.get('Authorization');
+
+            if (!token || !user) {
+                console.error('Login response missing token or user data');
+                return null;
+            }
+
+            this.saveTokenIntoBrowserStorage(token, user);
             return user;
-        } else {
-            console.log(response);
+        } catch (error) {
+            console.error('Login error:', error);
             return null;
         }
     }
 
-    signOut() {
+
+    signOut(router) {
         this.token = null;
         this.user = null;
         window.sessionStorage.removeItem(this.BROWSER_STORAGE_ITEM_NAME);
         window.localStorage.removeItem(this.BROWSER_STORAGE_ITEM_NAME);
 
-        window.location.href = '/';
+        router.push('/');
     }
 
     saveTokenIntoBrowserStorage(token, user, persistent = false) {

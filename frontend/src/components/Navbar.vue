@@ -24,7 +24,8 @@
 
 <script setup>
 import { computed, inject } from 'vue';
-
+import { useRouter } from 'vue-router';
+const router = useRouter();
 const sessionService = inject('sessionService');
 
 // Use computed properties to make the navbar reactive
@@ -32,7 +33,7 @@ const isLoggedIn = computed(() => sessionService.isAuthenticated());
 const userRole = computed(() => sessionService.user?.role || null);
 
 function handleLogout() {
-  sessionService.signOut();
+  sessionService.signOut(router);
 }
 </script>
 
