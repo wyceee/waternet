@@ -40,9 +40,9 @@ class MeasureController(
     }
 
     @PostMapping
-    fun submitMeasure(@RequestBody dto: MeasureDTO): ResponseEntity<String> {
+    fun submitMeasure(@RequestBody dto: MeasureDTO): ResponseEntity<Measure> {
         val user = userRepositoryJPA.findById(dto.userId).orElse(null)
-            ?: return ResponseEntity.badRequest().body("User not found.")
+            ?: return ResponseEntity.badRequest().build()
 
         val measure = Measure(
             user = user,
@@ -56,8 +56,8 @@ class MeasureController(
             capacity = dto.capacity
         )
 
-        measureRepositoryJPA.save(measure)
-        return ResponseEntity.ok("Measure submitted successfully.")
+        val saved = measureRepositoryJPA.save(measure)
+        return ResponseEntity.ok(saved)
     }
 
     // Approve a measure
