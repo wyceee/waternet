@@ -8,8 +8,7 @@ import wn.backend.repositories.MeasureRepositoryJPA
 @RestController
 @RequestMapping("/api/measures")
 class MeasureController(
-    private val measureRepositoryJPA: MeasureRepositoryJPA
-) {
+    private val measureRepositoryJPA: MeasureRepositoryJPA) {
 
     // Get all measures
     @GetMapping
