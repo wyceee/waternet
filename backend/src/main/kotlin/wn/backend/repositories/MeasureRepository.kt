@@ -17,6 +17,8 @@ interface MeasureRepository : JpaRepository<Measure, Long> {
 
     fun findAllByUserId(userId: Long): List<Measure>
 
+    fun save (measure: Measure): Measure
+
     @Modifying
     @Transactional
     @Query("UPDATE Measure m SET m.status = 'APPROVED' WHERE m.id = :id AND m.status = 'PENDING'")

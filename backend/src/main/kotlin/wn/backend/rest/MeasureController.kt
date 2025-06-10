@@ -36,6 +36,16 @@ class MeasureController(
         return ResponseEntity.ok(measures)
     }
 
+    @PostMapping
+    fun submitMeasure(@RequestBody measure: Measure): ResponseEntity<String> {
+        return try {
+            measureRepositoryJPA.save(measure)
+            ResponseEntity.ok("Measure submitted successfully.")
+        } catch (e: Exception) {
+            ResponseEntity.badRequest().body("Failed to submit measure: ${e.message}")
+        }
+    }
+
     // Approve a measure
     @PostMapping("/{id}/approve")
     fun approveMeasure(@PathVariable id: Long): ResponseEntity<String> {

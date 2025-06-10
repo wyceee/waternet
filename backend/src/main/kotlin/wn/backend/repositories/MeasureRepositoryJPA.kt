@@ -21,6 +21,10 @@ class MeasureRepositoryJPA(
         return measureRepository.findAllByUserId(userId)
     }
 
+    fun save(measure: Measure): Measure {
+        return measureRepository.save(measure)
+    }
+
     fun approve(id: Long): Boolean {
         return measureRepository.approve(id) > 0
     }
