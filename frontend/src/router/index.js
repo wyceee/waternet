@@ -6,6 +6,8 @@ import SupervisorPanel from '../components/SupervisorPanel.vue';
 import Wallet from '../components/Wallet.vue';
 import Login from '../components/Login.vue';
 import Signup from '../components/Signup.vue';
+import { reactive } from 'vue';
+import { sessionService } from '../App.vue'; // Import the globally provided sessionService
 
 const routes = [
     { path: '/', name: 'Home', component: Home },
@@ -17,7 +19,36 @@ const routes = [
     { path: '/signup', name: 'Signup', component: Signup },
 ];
 
-export const router = createRouter({
+const router = createRouter({
     history: createWebHistory(),
     routes
 });
+
+// Make sessionService reactive
+const reactiveSessionService = reactive(sessionService);
+
+router.beforeEach((to, from, next) => {
+    const user = reactiveSessionService.user;
+    const isAuthenticated = reactiveSessionService.isAuthenticated();
+
+    if (!isAuthenticated && to.path !== '/' && to.path !== '/login' && to.path !== '/signup') {
+        // Redirect unauthenticated users to the homepage
+        return next('/');
+    }
+
+    if (isAuthenticated) {
+        if (user.role === 'USER' && to.path === '/supervisor') {
+            // Prevent USER role from accessing the supervisor panel
+            return next('/');
+        }
+
+        if (user.role === 'SUPERVISOR' && to.path !== '/supervisor' && to.path !== '/') {
+            // Prevent SUPERVISOR role from accessing other pages
+            return next('/supervisor');
+        }
+    }
+
+    next(); // Allow navigation
+});
+
+export default router;

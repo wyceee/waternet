@@ -6,34 +6,16 @@
           <img src="@/assets/navbarlogo.png" alt="Logo" class="logo" />
         </div>
         <div class="nav-links">
-          <router-link to="/" class="nav-link" exact-active-class="active">Home</router-link> <!-- Add Home link -->
-          <router-link to="/dashboard" class="nav-link" exact-active-class="active">Dashboard</router-link>
-          <router-link to="/register" class="nav-link" exact-active-class="active">Register Measure</router-link>
-          <router-link to="/supervisor" class="nav-link" exact-active-class="active">Supervisor Panel</router-link>
-          <router-link to="/wallet" class="nav-link" exact-active-class="active">Wallet</router-link>
+          <router-link to="/" class="nav-link" exact-active-class="active">Home</router-link>
+          <router-link v-if="isLoggedIn && userRole === 'USER'" to="/dashboard" class="nav-link" exact-active-class="active">Dashboard</router-link>
+          <router-link v-if="isLoggedIn && userRole === 'USER'" to="/register" class="nav-link" exact-active-class="active">Register Measure</router-link>
+          <router-link v-if="isLoggedIn && userRole === 'SUPERVISOR'" to="/supervisor" class="nav-link" exact-active-class="active">Supervisor Panel</router-link>
+          <router-link v-if="isLoggedIn && userRole === 'USER'" to="/wallet" class="nav-link" exact-active-class="active">Wallet</router-link>
         </div>
         <div class="auth-buttons">
-          <router-link
-              v-if="!isLoggedIn"
-              to="/login"
-              class="auth-button login"
-          >
-            Login
-          </router-link>
-          <router-link
-              v-if="!isLoggedIn"
-              to="/signup"
-              class="auth-button signup"
-          >
-            Signup
-          </router-link>
-          <button
-              v-if="isLoggedIn"
-              @click="signOut"
-              class="auth-button signout"
-          >
-            Signout
-          </button>
+          <router-link v-if="!isLoggedIn" to="/login" class="auth-button login">Login</router-link>
+          <router-link v-if="!isLoggedIn" to="/signup" class="auth-button signup">Signup</router-link>
+          <button v-if="isLoggedIn" @click="handleLogout" class="auth-button signout">Logout</button>
         </div>
       </div>
     </div>
@@ -41,12 +23,16 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { computed, inject } from 'vue';
 
-const isLoggedIn = ref(false);
+const sessionService = inject('sessionService');
 
-function signOut() {
-  isLoggedIn.value = false;
+// Use computed properties to make the navbar reactive
+const isLoggedIn = computed(() => sessionService.isAuthenticated());
+const userRole = computed(() => sessionService.user?.role || null);
+
+function handleLogout() {
+  sessionService.signOut();
 }
 </script>
 

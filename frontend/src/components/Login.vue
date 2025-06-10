@@ -16,19 +16,28 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, inject } from 'vue';
 import { useRouter } from 'vue-router';
 
 const email = ref('');
 const password = ref('');
 const router = useRouter();
 
-function handleLogin() {
-  if (email.value && password.value) {
-    alert('Login successful!');
-    router.push('/');
-  } else {
-    alert('Invalid credentials');
+// Inject SessionService
+const sessionService = inject('sessionService');
+
+async function handleLogin() {
+  try {
+    const user = await sessionService.signIn(email.value, password.value);
+    if (user) {
+      console.log('JWT Token:', sessionService.getCurrentToken()); // Log the JWT token
+      alert('Login successful!');
+      router.push('/');
+    } else {
+      alert('Invalid credentials');
+    }
+  } catch (error) {
+    alert('An error occurred during login: ' + error.message);
   }
 }
 </script>

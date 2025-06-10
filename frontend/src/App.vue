@@ -7,6 +7,31 @@
 
 <script setup>
 import Navbar from './components/Navbar.vue';
+import { SessionService } from './services/SessionService.js';
+import { provide, shallowReactive } from 'vue';
+
+const BACKEND_URL = "http://localhost:8085";
+const JWT_STORAGE_ITEM = "session_token";
+
+// Create session service singleton
+const sessionService = shallowReactive(
+    new SessionService(`${BACKEND_URL}/authentication`, JWT_STORAGE_ITEM)
+);
+
+// Provide sessionService globally
+provide('sessionService', sessionService);
+</script>
+
+<script>
+import { shallowReactive } from 'vue';
+import { SessionService } from './services/SessionService.js';
+
+const BACKEND_URL = "http://localhost:8085";
+const JWT_STORAGE_ITEM = "session_token";
+
+export const sessionService = shallowReactive(
+    new SessionService(`${BACKEND_URL}/authentication`, JWT_STORAGE_ITEM)
+);
 </script>
 
 <style>
