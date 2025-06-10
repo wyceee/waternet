@@ -63,20 +63,30 @@ class MeasureController(
     // Approve a measure
     @PostMapping("/{id}/approve")
     fun approveMeasure(@PathVariable id: Long): ResponseEntity<String> {
-        return if (measureRepositoryJPA.approve(id)) {
-            ResponseEntity.ok("Measure approved successfully.")
-        } else {
-            ResponseEntity.badRequest().body("Failed to approve measure.")
+        val measure = measureRepositoryJPA.findById(id).orElse(null)
+            ?: return ResponseEntity.notFound().build()
+
+        if (measure.status != Measure.Status.PENDING) {
+            return ResponseEntity.badRequest().body("Only pending measures can be approved.")
         }
+
+        measure.status = Measure.Status.APPROVED
+        measureRepositoryJPA.save(measure)
+        return ResponseEntity.ok("Measure approved successfully.")
     }
 
     // Reject a measure
     @PostMapping("/{id}/reject")
     fun rejectMeasure(@PathVariable id: Long): ResponseEntity<String> {
-        return if (measureRepositoryJPA.reject(id)) {
-            ResponseEntity.ok("Measure rejected successfully.")
-        } else {
-            ResponseEntity.badRequest().body("Failed to reject measure.")
+        val measure = measureRepositoryJPA.findById(id).orElse(null)
+            ?: return ResponseEntity.notFound().build()
+
+        if (measure.status != Measure.Status.PENDING) {
+            return ResponseEntity.badRequest().body("Only pending measures can be rejected.")
         }
+
+        measure.status = Measure.Status.REJECTED
+        measureRepositoryJPA.save(measure)
+        return ResponseEntity.ok("Measure rejected successfully.")
     }
 }
