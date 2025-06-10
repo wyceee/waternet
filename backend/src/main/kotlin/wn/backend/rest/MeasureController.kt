@@ -1,14 +1,18 @@
 package wn.backend.rest
 
+import MeasureDTO
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import wn.backend.models.Measure
 import wn.backend.repositories.MeasureRepositoryJPA
+import wn.backend.repositories.UserRepositoryJPA
 
 @RestController
 @RequestMapping("/api/measures")
 class MeasureController(
-    private val measureRepositoryJPA: MeasureRepositoryJPA) {
+    private val measureRepositoryJPA: MeasureRepositoryJPA,
+    private val userRepositoryJPA: UserRepositoryJPA
+) {
 
     // Get all measures
     @GetMapping
@@ -36,13 +40,24 @@ class MeasureController(
     }
 
     @PostMapping
-    fun submitMeasure(@RequestBody measure: Measure): ResponseEntity<String> {
-        return try {
-            measureRepositoryJPA.save(measure)
-            ResponseEntity.ok("Measure submitted successfully.")
-        } catch (e: Exception) {
-            ResponseEntity.badRequest().body("Failed to submit measure: ${e.message}")
-        }
+    fun submitMeasure(@RequestBody dto: MeasureDTO): ResponseEntity<String> {
+        val user = userRepositoryJPA.findById(dto.userId).orElse(null)
+            ?: return ResponseEntity.badRequest().body("User not found.")
+
+        val measure = Measure(
+            user = user,
+            description = dto.description,
+            photoUrl = dto.photoUrl,
+            location = dto.location,
+            timestamp = dto.timestamp,
+            status = dto.status,
+            measureType = dto.measureType,
+            area = dto.area,
+            capacity = dto.capacity
+        )
+
+        measureRepositoryJPA.save(measure)
+        return ResponseEntity.ok("Measure submitted successfully.")
     }
 
     // Approve a measure
