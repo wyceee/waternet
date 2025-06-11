@@ -49,7 +49,7 @@
             </span>
           </td>
           <td>
-            <a :href="item.photoUrl" target="_blank" class="photo-link">View photo</a>
+            <button class="photo-link" @click="openPhoto(item.photoUrl)">View photo</button>
           </td>
           <td>
             <button class="btn approve" @click="approve(item.id)">
@@ -107,7 +107,7 @@
             </span>
           </td>
           <td>
-            <a :href="item.photoUrl" target="_blank" class="photo-link">View photo</a>
+            <button class="photo-link" @click="openPhoto(item.photoUrl)">View photo</button>
           </td>
         </tr>
         <tr v-if="reviewedMeasures.length === 0">
@@ -119,13 +119,19 @@
       </table>
     </div>
   </div>
+  <div v-if="showModal" class="modal-overlay" @click.self="closeModal">
+    <div class="modal-content">
+      <img :src="selectedPhotoUrl" alt="Measure Photo" />
+      <button class="close-btn" @click="closeModal">Close</button>
+    </div>
+  </div>
 </template>
-
 
 <script setup>
 import { onMounted, ref, computed } from 'vue'
 import { CheckCircle, XCircle, Droplets, Leaf, TreePine } from 'lucide-vue-next'
 import MeasureService from '@/services/MeasureService'
+import { BACKEND_URL } from '@/services/session.js';
 
 const allMeasures = ref([])
 
@@ -136,6 +142,19 @@ onMounted(async () => {
     console.error('Failed to fetch measures:', error)
   }
 })
+
+const showModal = ref(false)
+const selectedPhotoUrl = ref(null)
+
+function openPhoto(photoUrl) {
+  selectedPhotoUrl.value = `${BACKEND_URL}${photoUrl}`
+  showModal.value = true
+}
+
+function closeModal() {
+  showModal.value = false
+  selectedPhotoUrl.value = null
+}
 
 const pendingMeasures = computed(() =>
     allMeasures.value.filter(m => m.status === 'PENDING')
@@ -223,6 +242,54 @@ async function reject(id) {
 </script>
 
 <style scoped>
+.photo-link {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  color: #3b82f6;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.modal-content {
+  background: white;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  max-width: 90%;
+  max-height: 90%;
+  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.2);
+}
+
+.modal-content img {
+  max-width: 100%;
+  max-height: 70vh;
+  display: block;
+  margin-bottom: 1rem;
+}
+
+.close-btn {
+  background-color: #ef4444;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+  cursor: pointer;
+}
+
 .notification {
   margin-bottom: 1rem;
   padding: 0.75rem 1rem;

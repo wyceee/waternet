@@ -48,7 +48,6 @@ class MeasureController(
         val user = userRepositoryJPA.findById(dto.userId).orElse(null)
             ?: return ResponseEntity.badRequest().build()
 
-        // Extract base64 string from photoUrl
         val base64Data = dto.photoUrl.substringAfter("base64,")
         val imageBytes = Base64.getDecoder().decode(base64Data)
 
@@ -57,7 +56,6 @@ class MeasureController(
         Files.createDirectories(imagePath.parent)
         Files.write(imagePath, imageBytes, StandardOpenOption.CREATE)
 
-        // Store relative URL path, so frontend can access the image
         val measure = Measure(
             user = user,
             description = dto.description,

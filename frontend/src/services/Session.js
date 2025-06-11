@@ -1,7 +1,7 @@
 import { shallowReactive } from 'vue';
 import { SessionService } from './SessionService.js';
 
-const BACKEND_URL = 'http://localhost:8085';
+export const BACKEND_URL = 'http://localhost:8085';
 const JWT_STORAGE_ITEM = 'session_token';
 
 export const sessionService = shallowReactive(

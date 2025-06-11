@@ -47,7 +47,7 @@ class CreateInitialData {
             val measure1 = Measure(
                 user = user1,
                 description = "Green Roof Installation",
-                photoUrl = "http://example.com/photo1.jpg",
+                photoUrl = "/uploads/images/1749667448023.png",
                 location = "New York",
                 timestamp = Instant.now(),
                 status = Status.PENDING,
@@ -59,7 +59,7 @@ class CreateInitialData {
             val measure2 = Measure(
                 user = user1,
                 description = "Rain Garden Project",
-                photoUrl = "http://example.com/photo2.jpg",
+                photoUrl = "/uploads/images/1749670837144.png",
                 location = "Los Angeles",
                 timestamp = Instant.now(),
                 status = Status.PENDING,
@@ -71,7 +71,7 @@ class CreateInitialData {
             val measure3 = Measure(
                 user = user1,
                 description = "Permeable Pavement",
-                photoUrl = "http://example.com/photo3.jpg",
+                photoUrl = "/uploads/images/1749672013997.png",
                 location = "Chicago",
                 timestamp = Instant.now(),
                 status = Status.PENDING,
