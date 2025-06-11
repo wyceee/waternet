@@ -2,80 +2,262 @@
   <div>
     <div class="header">
       <h1 class="title">Supervisor Approval Panel</h1>
-      <p class="subtitle">Review and approve water retention measures</p>
+      <p>Review and approve water retention measures</p>
     </div>
 
-    <div class="panel">
-      <ul class="list">
-        <li
-            v-for="(item, index) in approvals"
-            :key="index"
-            class="list-item"
-        >
-          <div class="item-left">
-            <div :class="['icon-bg', item.iconBg]">
-              <component :is="item.icon" class="icon" :class="item.iconColor" />
-            </div>
-            <div class="item-content">
-              <div class="item-title">{{ item.title }}</div>
-              <div class="item-submitter">
-                Submitted by {{ item.submitter }} • {{ item.submittedAgo }}
-              </div>
-              <div class="item-details">{{ item.details }}</div>
-            </div>
-          </div>
+    <div v-if="notification.message" :class="['notification', notification.type]">
+      {{ notification.message }}
+    </div>
 
-          <div class="item-actions">
-            <button class="btn approve">
-              <CheckCircle class="btn-icon" />
-              Approve
+    <!-- PENDING -->
+    <div class="panel">
+      <h2 class="subtitle">Pending Measures</h2>
+      <table class="measure-table">
+        <thead>
+        <tr>
+          <th></th>
+          <th>Submitted</th>
+          <th>User</th>
+          <th>Description</th>
+          <th>Type</th>
+          <th>Area</th>
+          <th>Capacity</th>
+          <th>Location</th>
+          <th>Status</th>
+          <th>Photo</th>
+          <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr v-for="item in pendingMeasures" :key="item.id">
+
+          <td>
+            <div :class="['icon-bg', getIconBg(item.measureType)]">
+              <component :is="getIcon(item.measureType)" class="icon" :class="getIconColor(item.measureType)" />
+            </div>
+          </td>
+          <td>{{ getRelativeTime(item.timestamp) }}</td>
+          <td>{{ item.user?.name || 'Unknown' }}</td>
+          <td>{{ item.description }}</td>
+          <td>{{ item.measureType }}</td>
+          <td>{{ item.area }} m²</td>
+          <td>{{ item.capacity }} L</td>
+          <td>{{ item.location }}</td>
+          <td>
+            <span :class="['status-badge', getStatusClass(item.status)]">
+              {{ item.status }}
+            </span>
+          </td>
+          <td>
+            <a :href="item.photoUrl" target="_blank" class="photo-link">View photo</a>
+          </td>
+          <td>
+            <button class="btn approve" @click="approve(item.id)">
+              <CheckCircle class="btn-icon" /> Approve
             </button>
-            <button class="btn reject">
-              <XCircle class="btn-icon" />
-              Reject
+            <button class="btn reject" @click="reject(item.id)">
+              <XCircle class="btn-icon" /> Reject
             </button>
-          </div>
-        </li>
-      </ul>
+          </td>
+        </tr>
+        <tr v-if="pendingMeasures.length === 0">
+          <td colspan="11" style="text-align: center; padding: 1rem; color: #6b7280;">
+            No pending measures found.
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- REVIEWED -->
+    <div class="panel" style="margin-top: 5rem;">
+      <h2 class="subtitle">Reviewed Measures</h2>
+      <table class="measure-table">
+        <thead>
+        <tr>
+          <th></th>
+          <th>Submitted</th>
+          <th>User</th>
+          <th>Description</th>
+          <th>Type</th>
+          <th>Area</th>
+          <th>Capacity</th>
+          <th>Location</th>
+          <th>Status</th>
+          <th>Photo</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr v-for="item in reviewedMeasures" :key="item.id">
+          <td>
+            <div :class="['icon-bg', getIconBg(item.measureType)]">
+              <component :is="getIcon(item.measureType)" class="icon" :class="getIconColor(item.measureType)" />
+            </div>
+          </td>
+          <td>{{ getRelativeTime(item.timestamp) }}</td>
+          <td>{{ item.user?.name || 'Unknown' }}</td>
+          <td>{{ item.description }}</td>
+          <td>{{ item.measureType }}</td>
+          <td>{{ item.area }} m²</td>
+          <td>{{ item.capacity }} L</td>
+          <td>{{ item.location }}</td>
+          <td>
+            <span :class="['status-badge', getStatusClass(item.status)]">
+              {{ item.status }}
+            </span>
+          </td>
+          <td>
+            <a :href="item.photoUrl" target="_blank" class="photo-link">View photo</a>
+          </td>
+        </tr>
+        <tr v-if="reviewedMeasures.length === 0">
+          <td colspan="10" style="text-align: center; padding: 1rem; color: #6b7280;">
+            No reviewed measures available.
+          </td>
+        </tr>
+        </tbody>
+      </table>
     </div>
   </div>
 </template>
 
-<script setup>
-import { CheckCircle, XCircle, Droplets, Leaf, TreePine } from 'lucide-vue-next';
 
-const approvals = [
-  {
-    icon: Droplets,
-    iconBg: 'icon-bg-blue',
-    iconColor: 'icon-blue',
-    title: 'Rain Barrel System',
-    submitter: 'John Doe',
-    submittedAgo: '2 days ago',
-    details: '500 gallon capacity • 123 Oak Street',
-  },
-  {
-    icon: Leaf,
-    iconBg: 'icon-bg-green',
-    iconColor: 'icon-green',
-    title: 'Green Roof Installation',
-    submitter: 'Jane Smith',
-    submittedAgo: '3 days ago',
-    details: '200 sq ft • 456 Pine Avenue',
-  },
-  {
-    icon: TreePine,
-    iconBg: 'icon-bg-purple',
-    iconColor: 'icon-purple',
-    title: 'Permeable Pavement',
-    submitter: 'Mike Johnson',
-    submittedAgo: '5 days ago',
-    details: '150 sq ft driveway • 789 Elm Street',
-  },
-];
+<script setup>
+import { onMounted, ref, computed } from 'vue'
+import { CheckCircle, XCircle, Droplets, Leaf, TreePine } from 'lucide-vue-next'
+import MeasureService from '@/services/MeasureService'
+
+const allMeasures = ref([])
+
+onMounted(async () => {
+  try {
+    allMeasures.value = await MeasureService.getAllMeasures()
+  } catch (error) {
+    console.error('Failed to fetch measures:', error)
+  }
+})
+
+const pendingMeasures = computed(() =>
+    allMeasures.value.filter(m => m.status === 'PENDING')
+)
+
+const reviewedMeasures = computed(() =>
+    allMeasures.value.filter(m => m.status === 'APPROVED' || m.status === 'REJECTED')
+)
+
+const notification = ref({ message: '', type: '' })
+
+function showNotification(msg, type = 'success') {
+  notification.value = { message: msg, type }
+  setTimeout(() => {
+    notification.value = { message: '', type: '' }
+  }, 3000)
+}
+
+function getIcon(type) {
+  switch (type) {
+    case 'Rain Barrel': return Droplets
+    case 'Green Roof': return Leaf
+    case 'Pavement': return TreePine
+    default: return Droplets
+  }
+}
+
+function getIconBg(type) {
+  switch (type) {
+    case 'Rain Barrel': return 'icon-bg-blue'
+    case 'Green Roof': return 'icon-bg-green'
+    case 'Pavement': return 'icon-bg-purple'
+    default: return 'icon-bg-blue'
+  }
+}
+
+function getIconColor(type) {
+  switch (type) {
+    case 'Rain Barrel': return 'icon-blue'
+    case 'Green Roof': return 'icon-green'
+    case 'Pavement': return 'icon-purple'
+    default: return 'icon-blue'
+  }
+}
+
+function getStatusClass(status) {
+  switch (status) {
+    case 'PENDING': return 'pending'
+    case 'APPROVED': return 'approved'
+    case 'REJECTED': return 'rejected'
+    default: return ''
+  }
+}
+
+function getRelativeTime(timestamp) {
+  const now = new Date()
+  const then = new Date(timestamp)
+  const diff = Math.floor((now - then) / (1000 * 60 * 60 * 24))
+  return diff === 0 ? 'Today' : `${diff} day${diff > 1 ? 's' : ''} ago`
+}
+
+async function approve(id) {
+  try {
+    await MeasureService.approveMeasure(id)
+    const measure = allMeasures.value.find(m => m.id === id)
+    if (measure) measure.status = 'APPROVED'
+    showNotification('Measure approved successfully.', 'success')
+  } catch (err) {
+    console.error('Failed to approve measure:', err)
+    showNotification('Failed to approve measure.', 'error')
+  }
+}
+
+async function reject(id) {
+  try {
+    await MeasureService.rejectMeasure(id)
+    const measure = allMeasures.value.find(m => m.id === id)
+    if (measure) measure.status = 'REJECTED'
+    showNotification('Measure rejected.', 'error')
+  } catch (err) {
+    console.error('Failed to reject measure:', err)
+    showNotification('Failed to reject measure.', 'error')
+  }
+}
 </script>
 
 <style scoped>
+.notification {
+  margin-bottom: 1rem;
+  padding: 0.75rem 1rem;
+  border-radius: 0.375rem;
+  font-weight: 500;
+  text-align: center;
+}
+
+.notification.success {
+  background-color: #d1fae5;
+  color: #065f46;
+  border: 1px solid #10b981;
+}
+
+.notification.error {
+  background-color: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #ef4444;
+}
+
+.status-badge {
+  padding: 0.35em 0.75em;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: capitalize;
+  display: inline-block;
+  color: white;
+}
+.photo-link {
+  color: #3b82f6;
+  text-decoration: none;
+  font-weight: 500;
+}
+
 .header {
   margin-bottom: 2rem;
 }
@@ -89,149 +271,123 @@ const approvals = [
 
 .subtitle {
   margin-top: 0.5rem;
+  margin-bottom: 0.75rem;
   color: #4b5563;
   font-size: 1rem;
+  font-weight: 600;
+  padding: 0.7rem 1.5rem;
 }
 
 .panel {
   background-color: #ffffff;
   box-shadow: 0 1px 2px rgb(0 0 0 / 0.05);
   border-radius: 0.375rem;
-  overflow: hidden;
+  overflow-x: auto;
 }
 
-.list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  border-top: 1px solid #e5e7eb;
+.measure-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 900px;
 }
 
-.list-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1.5rem 1.5rem;
+.measure-table th,
+.measure-table td {
+  padding: 0.75rem 1rem;
+  text-align: left;
   border-bottom: 1px solid #e5e7eb;
+  font-size: 0.875rem;
 }
 
-.item-left {
-  display: flex;
-  align-items: center;
-  flex: 1;
+.measure-table th {
+  font-weight: 600;
+  color: #374151;
+  background-color: #f9fafb;
 }
 
 .icon-bg {
-  height: 3rem;
-  width: 3rem;
+  height: 2.25rem;
+  width: 2.25rem;
   border-radius: 9999px;
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-shrink: 0;
+}
+
+.icon {
+  height: 1.25rem;
+  width: 1.25rem;
 }
 
 .icon-bg-blue {
   background-color: #dbeafe;
 }
 
-.icon-bg-green {
-  background-color: #d1fae5;
-}
-
-.icon-bg-purple {
-  background-color: #ede9fe;
-}
-
-.icon {
-  height: 1.5rem;
-  width: 1.5rem;
-}
-
 .icon-blue {
   color: #2563eb;
+}
+
+.icon-bg-green {
+  background-color: #d1fae5;
 }
 
 .icon-green {
   color: #16a34a;
 }
 
+.icon-bg-purple {
+  background-color: #ede9fe;
+}
+
 .icon-purple {
   color: #7c3aed;
 }
 
-.item-content {
-  margin-left: 1rem;
-  flex: 1;
-}
-
-.item-title {
-  font-size: 1.125rem;
-  font-weight: 500;
-  color: #111827;
-}
-
-.item-submitter {
-  font-size: 0.875rem;
-  color: #6b7280;
-  margin-top: 0.25rem;
-}
-
-.item-details {
-  font-size: 0.875rem;
-  color: #4b5563;
-  margin-top: 0.25rem;
-}
-
-.item-actions {
-  display: flex;
-  gap: 0.5rem;
-}
-
 .btn {
-  display: inline-flex;
-  align-items: center;
-  padding: 0.5rem 0.75rem;
-  border-radius: 0.375rem;
-  font-size: 0.875rem;
-  font-weight: 500;
+  font-size: 0.75rem;
+  padding: 0.4rem 0.75rem;
   border: none;
+  border-radius: 0.375rem;
   cursor: pointer;
-  user-select: none;
-  outline-offset: 2px;
-  transition: background-color 0.2s;
+  color: white;
+  margin-right: 0.5rem;
 }
 
 .btn-icon {
   height: 1rem;
   width: 1rem;
-  margin-right: 0.25rem;
+  margin-right: 0.4rem;
+  margin-bottom: 0.1rem;
+  vertical-align: middle;
 }
 
 .btn.approve {
-  color: #ffffff;
   background-color: #16a34a;
-  box-shadow: 0 0 0 2px transparent;
-}
-
-.btn.approve:hover {
-  background-color: #15803d;
-}
-
-.btn.approve:focus {
-  box-shadow: 0 0 0 2px #4ade80;
 }
 
 .btn.reject {
-  color: #ffffff;
   background-color: #dc2626;
 }
 
-.btn.reject:hover {
-  background-color: #b91c1c;
+.status-badge {
+  padding: 0.3em 0.6em;
+  border-radius: 0.375rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: white;
+  display: inline-block;
 }
 
-.btn.reject:focus {
-  box-shadow: 0 0 0 2px #f87171;
+.status-badge.pending {
+  background-color:#f59e0b;
+}
+
+.status-badge.approved {
+  background-color: #10b981;
+}
+
+.status-badge.rejected {
+  background-color: #ef4444;
 }
 </style>

@@ -50,7 +50,7 @@ class CreateInitialData {
                 photoUrl = "http://example.com/photo1.jpg",
                 location = "New York",
                 timestamp = Instant.now(),
-                status = Status.APPROVED,
+                status = Status.PENDING,
                 measureType = "Green Roof",
                 area = 120.5,
                 capacity = 300.0
@@ -69,12 +69,12 @@ class CreateInitialData {
             )
 
             val measure3 = Measure(
-                user = user2,
+                user = user1,
                 description = "Permeable Pavement",
                 photoUrl = "http://example.com/photo3.jpg",
                 location = "Chicago",
                 timestamp = Instant.now(),
-                status = Status.REJECTED,
+                status = Status.PENDING,
                 measureType = "Pavement",
                 area = 150.0,
                 capacity = 400.0

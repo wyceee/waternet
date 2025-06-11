@@ -48,7 +48,6 @@ export class SessionService {
         }
     }
 
-
     signOut(router) {
         this.token = null;
         this.user = null;

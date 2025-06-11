@@ -15,7 +15,7 @@
             <div class="text-wrapper">
               <dl>
                 <dt class="label">Total Measures</dt>
-                <dd class="value">24</dd>
+                <dd class="value">{{ total }}</dd>
               </dl>
             </div>
           </div>
@@ -31,7 +31,7 @@
             <div class="text-wrapper">
               <dl>
                 <dt class="label">Approved</dt>
-                <dd class="value">18</dd>
+                <dd class="value">{{ approved }}</dd>
               </dl>
             </div>
           </div>
@@ -47,7 +47,7 @@
             <div class="text-wrapper">
               <dl>
                 <dt class="label">Pending</dt>
-                <dd class="value">4</dd>
+                <dd class="value">{{ pending }}</dd>
               </dl>
             </div>
           </div>
@@ -77,43 +77,30 @@
         <p class="recent-subtitle">Latest water retention measures submitted</p>
       </div>
       <ul class="measures-list">
-        <li class="measure-item">
+        <li
+            v-for="measure in userMeasures"
+            :key="measure.id"
+            class="measure-item"
+        >
           <div class="measure-info">
-            <div class="avatar green-bg">
-              <Leaf class="avatar-icon green-icon-dark" />
+            <div :class="['avatar', getIconBg(measure.measureType)]">
+              <component
+                  :is="getIcon(measure.measureType)"
+                  class="avatar-icon"
+                  :class="getIconColor(measure.measureType)"
+              />
             </div>
             <div class="measure-text">
-              <div class="measure-name">Green Roof Installation</div>
-              <div class="measure-date">Submitted 2 days ago</div>
+              <div class="measure-name">{{ measure.description }}</div>
+              <div class="measure-date">Submitted {{ getRelativeTime(measure.timestamp) }}</div>
             </div>
           </div>
-          <span class="status approved">Approved</span>
+          <span class="status" :class="measure.status.toLowerCase()">
+      {{ measure.status }}
+    </span>
         </li>
-
-        <li class="measure-item">
-          <div class="measure-info">
-            <div class="avatar blue-bg">
-              <Droplets class="avatar-icon blue-icon-dark" />
-            </div>
-            <div class="measure-text">
-              <div class="measure-name">Rain Barrel System</div>
-              <div class="measure-date">Submitted 5 days ago</div>
-            </div>
-          </div>
-          <span class="status pending">Pending</span>
-        </li>
-
-        <li class="measure-item">
-          <div class="measure-info">
-            <div class="avatar purple-bg">
-              <TreePine class="avatar-icon purple-icon-dark" />
-            </div>
-            <div class="measure-text">
-              <div class="measure-name">Permeable Pavement</div>
-              <div class="measure-date">Submitted 1 week ago</div>
-            </div>
-          </div>
-          <span class="status approved">Approved</span>
+        <li v-if="userMeasures.length === 0" class="measure-item">
+          <div class="measure-text">No measures found.</div>
         </li>
       </ul>
     </div>
@@ -122,7 +109,62 @@
 
 <script setup>
 import { BarChart3, CheckCircle, Clock, Coins, Droplets, Leaf, TreePine } from 'lucide-vue-next';
+import {SessionService} from '@/services/SessionService';
+import MeasureService from '@/services/MeasureService';
+import {computed, onMounted, ref} from 'vue';
 
+const sessionService = new SessionService('/api', 'session_token');
+const userId = sessionService.user?.id;
+
+const userMeasures = ref([]);
+
+onMounted(async () => {
+  if (!userId) return;
+
+  try {
+    userMeasures.value = await MeasureService.getMeasuresByUserId(userId);
+  } catch (err) {
+    console.error('Failed to load user measures:', err);
+  }
+});
+
+const total = computed(() => userMeasures.value.length);
+const approved = computed(() => userMeasures.value.filter(m => m.status === 'APPROVED').length);
+const pending = computed(() => userMeasures.value.filter(m => m.status === 'PENDING').length);
+
+function getIcon(type) {
+  switch (type) {
+    case 'Rain Barrel': return Droplets;
+    case 'Green Roof': return Leaf;
+    case 'Pavement': return TreePine;
+    default: return Droplets;
+  }
+}
+
+function getIconBg(type) {
+  switch (type) {
+    case 'Rain Barrel': return 'blue-bg';
+    case 'Green Roof': return 'green-bg';
+    case 'Pavement': return 'purple-bg';
+    default: return 'blue-bg';
+  }
+}
+
+function getIconColor(type) {
+  switch (type) {
+    case 'Rain Barrel': return 'blue-icon-dark';
+    case 'Green Roof': return 'green-icon-dark';
+    case 'Pavement': return 'purple-icon-dark';
+    default: return 'blue-icon-dark';
+  }
+}
+
+function getRelativeTime(timestamp) {
+  const now = new Date();
+  const then = new Date(timestamp);
+  const diff = Math.floor((now - then) / (1000 * 60 * 60 * 24));
+  return diff === 0 ? 'Today' : `${diff} day${diff > 1 ? 's' : ''} ago`;
+}
 </script>
 <style>
 .header-section {
@@ -353,4 +395,10 @@ import { BarChart3, CheckCircle, Clock, Coins, Droplets, Leaf, TreePine } from '
   background-color: #fef3c7;
   color: #92400e;
 }
+
+.rejected {
+  background-color: #fee2e2;
+  color: #991b1b;
+}
+
 </style>
