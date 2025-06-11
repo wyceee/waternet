@@ -11,6 +11,11 @@ import org.springframework.http.ResponseEntity
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.web.bind.annotation.*
 import java.util.*
+import org.web3j.crypto.Credentials
+import org.web3j.crypto.WalletUtils
+import wn.backend.dto.RegisterResponseDTO
+import wn.backend.dto.UserDTO
+import java.nio.file.Paths
 
 @RestController
 @RequestMapping("/authentication")
@@ -58,16 +63,42 @@ class AuthenticationController {
             return ResponseEntity.status(409).body("Email already exists.")
         }
 
-        val newUser = User(
-            name = name,
-            email = email,
-            hashedPassword = passwordEncoder.encode(password),
-            role = wn.backend.models.Role.USER,
-            wallet = "0x" + UUID.randomUUID().toString().replace("-", "").take(40)
-        )
+        try {
+            // Generate Ethereum wallet
+            val walletPassword = UUID.randomUUID().toString()
+            val walletDirectory = Paths.get("wallets").toAbsolutePath().toString()
+            val walletFileName =
+                WalletUtils.generateNewWalletFile(walletPassword, Paths.get(walletDirectory).toFile(), false)
+            val walletFilePath = "$walletDirectory/$walletFileName"
 
-        val savedUser = userRepository.save(newUser)
-        return ResponseEntity.status(201).body(savedUser)
+            val credentials = WalletUtils.loadCredentials(walletPassword, walletFilePath)
+            val walletAddress = credentials.address
+            val privateKey = credentials.ecKeyPair.privateKey.toString(16)
+
+            // Save user with wallet details
+            val newUser = User(
+                name = name,
+                email = email,
+                hashedPassword = passwordEncoder.encode(password),
+                role = wn.backend.models.Role.USER,
+                wallet = walletAddress
+            )
+
+            val savedUser = userRepository.save(newUser)
+
+            // Convert to UserDTO
+            val userDTO = UserDTO(
+                id = savedUser.id,
+                name = savedUser.name,
+                email = savedUser.email,
+                wallet = savedUser.wallet
+            )
+
+            val response = RegisterResponseDTO(user = userDTO, privateKey = privateKey)
+            return ResponseEntity.status(201).body(response)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            return ResponseEntity.status(500).body("Failed to create wallet: ${e.message}")
+        }
     }
-
-}
+    }

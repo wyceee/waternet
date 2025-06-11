@@ -60,7 +60,9 @@ export class SessionService {
                 throw new Error(await response.text() || 'Registration failed');
             }
 
-            return await response.json();
+            const user = await response.json();
+
+            return user;
         } catch (error) {
             console.error('Registration error:', error);
             throw new Error(error.message || 'Registration failed');

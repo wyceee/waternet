@@ -28,7 +28,7 @@ data class User(
     val measures: MutableList<Measure> = mutableListOf(),
 
     @Column(nullable = false, unique = true, length = 42)
-    var wallet: String // VeChain wallet address
+    var wallet: String,
 )
 
 enum class Role {
