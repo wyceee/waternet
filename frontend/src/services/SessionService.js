@@ -48,6 +48,25 @@ export class SessionService {
         }
     }
 
+    async register(name, email, hashedPassword) {
+        try {
+            const response = await fetch(`${this.RESOURCES_URL}/register`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, email, hashedPassword }),
+            });
+
+            if (!response.ok) {
+                throw new Error(await response.text() || 'Registration failed');
+            }
+
+            return await response.json();
+        } catch (error) {
+            console.error('Registration error:', error);
+            throw new Error(error.message || 'Registration failed');
+        }
+    }
+
     signOut(router) {
         this.token = null;
         this.user = null;

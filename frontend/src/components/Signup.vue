@@ -3,6 +3,10 @@
     <h1 class="auth-title">Signup</h1>
     <form @submit.prevent="handleSignup">
       <div class="form-group">
+        <label for="name">Name</label>
+        <input type="text" id="name" v-model="name" required />
+      </div>
+      <div class="form-group">
         <label for="email">Email</label>
         <input type="email" id="email" v-model="email" required />
       </div>
@@ -20,21 +24,39 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
-import { useRouter } from 'vue-router';
+import {ref, inject} from 'vue';
+import {useRouter} from 'vue-router';
 
+const name = ref('');
 const email = ref('');
 const password = ref('');
 const confirmPassword = ref('');
 const router = useRouter();
 
-function handleSignup() {
-  if (password.value === confirmPassword.value) {
-    alert('Signup successful!');
-    router.push('/login');
-  } else {
+// Inject SessionService
+const sessionService = inject('sessionService');
+
+async function handleSignup() {
+  if (password.value !== confirmPassword.value) {
     alert('Passwords do not match');
+    return;
   }
+
+  try {
+    const hashedPassword = await hashPassword(password.value); // Example hashing function
+    const user = await sessionService.register(name.value, email.value, hashedPassword);
+    if (user) {
+      alert('Signup successful!');
+      router.push('/login');
+    }
+  } catch (error) {
+    alert('An error occurred during signup: ' + error.message);
+  }
+}
+
+// Example hashing function (replace with actual implementation)
+async function hashPassword(password) {
+  return password; // Replace with actual hashing logic
 }
 </script>
 
