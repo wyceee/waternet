@@ -118,6 +118,8 @@
                   :src="`${BACKEND_URL}${measure.photoUrl}`"
                   alt="Measure Photo"
                   class="photo-preview"
+                  @click.stop="openModalPhoto(measure.photoUrl)"
+                  style="cursor: pointer"
               />
             </div>
           </div>
@@ -129,6 +131,12 @@
           <div class="measure-text">No measures found.</div>
         </li>
       </ul>
+    </div>
+  </div>
+  <div v-if="showModal" class="modal-overlay" @click.self="closeModal">
+    <div class="modal-content">
+      <img :src="selectedPhotoUrl" alt="Enlarged Measure Photo" />
+      <button class="close-btn" @click="closeModal">Close</button>
     </div>
   </div>
 </template>
@@ -155,6 +163,19 @@ onMounted(async () => {
     console.error('Failed to load user measures:', err);
   }
 });
+
+const showModal = ref(false);
+const selectedPhotoUrl = ref(null);
+
+function openModalPhoto(photoUrl) {
+  selectedPhotoUrl.value = `${BACKEND_URL}${photoUrl}`;
+  showModal.value = true;
+}
+
+function closeModal() {
+  showModal.value = false;
+  selectedPhotoUrl.value = null;
+}
 
 const total = computed(() => userMeasures.value.length);
 const approved = computed(() => userMeasures.value.filter(m => m.status === 'APPROVED').length);
@@ -199,6 +220,44 @@ function getRelativeTime(timestamp) {
 }
 </script>
 <style>
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.modal-content {
+  background: white;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  max-width: 90%;
+  max-height: 90%;
+  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.2);
+}
+
+.modal-content img {
+  max-width: 100%;
+  max-height: 70vh;
+  display: block;
+  margin-bottom: 1rem;
+}
+
+.close-btn {
+  background-color: #ef4444;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+  cursor: pointer;
+}
+
 .measure-item {
   cursor: pointer;
   transition: background-color 0.2s ease;
