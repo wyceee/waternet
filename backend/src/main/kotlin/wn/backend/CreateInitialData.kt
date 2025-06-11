@@ -27,19 +27,21 @@ class CreateInitialData {
         return CommandLineRunner {
 
             val user1 = User(
-                name = "John Doe",
-                email = "john.doe@example.com",
-                hashedPassword = passwordEncoder.encode("hashedpassword123"),
+                name = "User",
+                email = "user@user",
+                hashedPassword = passwordEncoder.encode("user"),
                 role = Role.USER,
-                wallet = "0x1234567890abcdef1234567890abcdef12345678"
+                wallet = "0x5104B63372cA589a9AB34b14177237379AC1574A"
+                //USER private key: 76bf60728b812afde4d47f91e0e5bee2d59fdca5d5fa3579d720ff233f58c3da
             )
 
             val user2 = User(
-                name = "Jane Smith",
-                email = "jane.smith@example.com",
-                hashedPassword = passwordEncoder.encode("hashedpassword456"),
+                name = "SupervisorGuy",
+                email = "admin@admin",
+                hashedPassword = passwordEncoder.encode("admin"),
                 role = Role.SUPERVISOR,
-                wallet = "0xabcdef1234567890abcdef1234567890abcdef12"
+                wallet = "0x663aaf2f930bf0f7fa1f4eda9de0a00187c1ca10"
+                //ADMIN private key: 940c7f8e6ecfa164f60e249d849124585ff2919500fbf6454eefcf4d37ccae2d
             )
 
             userRepository.saveAll(listOf(user1, user2))
