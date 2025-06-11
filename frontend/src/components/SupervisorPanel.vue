@@ -107,7 +107,7 @@
             </span>
           </td>
           <td>
-            <a :href="item.photoUrl" target="_blank" class="photo-link">View photo</a>
+            <a :href="`${BACKEND_URL}${item.photoUrl}`" target="_blank" class="photo-link">View photo</a>
           </td>
         </tr>
         <tr v-if="reviewedMeasures.length === 0">
@@ -126,6 +126,7 @@
 import { onMounted, ref, computed } from 'vue'
 import { CheckCircle, XCircle, Droplets, Leaf, TreePine } from 'lucide-vue-next'
 import MeasureService from '@/services/MeasureService'
+import { BACKEND_URL } from '@/services/session.js';
 
 const allMeasures = ref([])
 
