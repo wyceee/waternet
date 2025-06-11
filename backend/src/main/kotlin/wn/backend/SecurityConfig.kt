@@ -23,7 +23,7 @@ class SecurityConfig {
             .cors { }
             .authorizeHttpRequests { requests ->
                 requests
-                    .requestMatchers("/authentication/**", "/h2-console/**").permitAll()
+                    .requestMatchers("/uploads/**","/authentication/**", "/h2-console/**").permitAll()
                     .requestMatchers("/api/users/**").hasAnyRole("SUPERVISOR", "USER")
                     .requestMatchers("/api/measures/*/approve", "/api/measures/*/reject").hasRole("SUPERVISOR")
                     .requestMatchers("/api/measures/**").hasAnyRole("SUPERVISOR", "USER")

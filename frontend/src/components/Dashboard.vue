@@ -81,6 +81,7 @@
             v-for="measure in userMeasures"
             :key="measure.id"
             class="measure-item"
+            @click="toggleExpand(measure.id)"
         >
           <div class="measure-info">
             <div :class="['avatar', getIconBg(measure.measureType)]">
@@ -95,9 +96,16 @@
               <div class="measure-date">Submitted {{ getRelativeTime(measure.timestamp) }}</div>
             </div>
           </div>
+          <div v-show="expandedMeasureId === measure.id" class="measure-extra-info">
+            <div class="measure-location">Location: {{ measure.location }}</div>
+            <div class="measure-area">Area: {{ measure.area }} m²</div>
+            <div class="measure-capacity">Capacity: {{ measure.capacity }} liters</div>
+            <div v-if="measure.photoUrl" class="measure-photo">
+              <img :src="`http://localhost:8085${measure.photoUrl}`" alt="Measure Photo" class="photo-preview" />            </div>
+          </div>
           <span class="status" :class="measure.status.toLowerCase()">
-      {{ measure.status }}
-    </span>
+        {{ measure.status }}
+      </span>
         </li>
         <li v-if="userMeasures.length === 0" class="measure-item">
           <div class="measure-text">No measures found.</div>
@@ -113,6 +121,7 @@ import {SessionService} from '@/services/SessionService';
 import MeasureService from '@/services/MeasureService';
 import {computed, onMounted, ref} from 'vue';
 
+const expandedMeasureId = ref(null);
 const sessionService = new SessionService('/api', 'session_token');
 const userId = sessionService.user?.id;
 
@@ -139,6 +148,10 @@ function getIcon(type) {
     case 'Pavement': return TreePine;
     default: return Droplets;
   }
+}
+
+function toggleExpand(measureId) {
+  expandedMeasureId.value = expandedMeasureId.value === measureId ? null : measureId;
 }
 
 function getIconBg(type) {
@@ -218,6 +231,34 @@ function getRelativeTime(timestamp) {
 .card-row {
   display: flex;
   align-items: center;
+}
+
+.measure-extra-info {
+  width: 50rem;
+  margin-top: 8px;
+  padding: 12px;
+  background-color: #f9fafb;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+}
+
+.measure-location,
+.measure-area,
+.measure-capacity {
+  font-size: 0.875rem;
+  color: #374151;
+  margin-bottom: 8px;
+}
+
+.measure-photo {
+  margin-top: 12px;
+}
+
+.photo-preview {
+  max-width: 100px;
+  max-height: 100px;
+  border-radius: 8px;
+  object-fit: cover;
 }
 
 .icon-wrapper {

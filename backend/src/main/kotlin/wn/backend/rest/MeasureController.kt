@@ -6,6 +6,10 @@ import org.springframework.web.bind.annotation.*
 import wn.backend.models.Measure
 import wn.backend.repositories.MeasureRepositoryJPA
 import wn.backend.repositories.UserRepositoryJPA
+import java.util.Base64
+import java.nio.file.Files
+import java.nio.file.Paths
+import java.nio.file.StandardOpenOption
 
 @RestController
 @RequestMapping("/api/measures")
@@ -44,10 +48,20 @@ class MeasureController(
         val user = userRepositoryJPA.findById(dto.userId).orElse(null)
             ?: return ResponseEntity.badRequest().build()
 
+        // Extract base64 string from photoUrl
+        val base64Data = dto.photoUrl.substringAfter("base64,")
+        val imageBytes = Base64.getDecoder().decode(base64Data)
+
+        val fileName = "${System.currentTimeMillis()}.png"
+        val imagePath = Paths.get("uploads/images").resolve(fileName)
+        Files.createDirectories(imagePath.parent)
+        Files.write(imagePath, imageBytes, StandardOpenOption.CREATE)
+
+        // Store relative URL path, so frontend can access the image
         val measure = Measure(
             user = user,
             description = dto.description,
-            photoUrl = dto.photoUrl,
+            photoUrl = "/uploads/images/$fileName",
             location = dto.location,
             timestamp = dto.timestamp,
             status = dto.status,

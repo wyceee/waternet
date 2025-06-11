@@ -103,9 +103,12 @@
 import { ref } from 'vue';
 import { Upload } from 'lucide-vue-next';
 import { createMeasure, validateMeasure } from '@/models/measure.js';
+import MeasureService from '@/services/MeasureService.js';
+import {sessionService} from "@/services/Session.js";
 
-const currentUserId = 1;
+const currentUserId = sessionService.user?.id || null;
 const form = ref(createMeasure(currentUserId));
+
 
 form.value.measureType = 'Green Roof';
 form.value.area = null;
@@ -124,16 +127,34 @@ function handleFileUpload(event) {
   if (files[0]) reader.readAsDataURL(files[0]);
 }
 
-function submitForm() {
+async function submitForm() {
   const errors = validateMeasure(form.value);
   if (errors.length > 0) {
     alert('Form errors:\n' + errors.join('\n'));
     return;
   }
 
+  const measurePayload = {
+    userId: currentUserId,
+    description: form.value.description,
+    photoUrl: form.value.photoUrl, // Send base64 data URL
+    location: form.value.location,
+    timestamp: new Date().toISOString(),
+    status: 'PENDING',
+    measureType: form.value.measureType,
+    area: form.value.area ?? 0,
+    capacity: form.value.capacity ?? 0
+  };
 
-  console.log('Submitted measure:', form.value);
-  alert('Submitted for supervisor approval!');
+  console.log('Measure structure:', measurePayload);
+
+  try {
+    const response = await MeasureService.submitMeasure(measurePayload);
+    console.log('Submitted measure:', response);
+    alert('Submitted for supervisor approval!');
+  } catch (error) {
+    alert(error.message);
+  }
 }
 </script>
 
