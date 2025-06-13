@@ -84,6 +84,7 @@
           <th>Capacity</th>
           <th>Location</th>
           <th>Status</th>
+          <th>Transaction</th>
           <th>Photo</th>
         </tr>
         </thead>
@@ -107,6 +108,21 @@
             </span>
           </td>
           <td>
+            <template v-if="item.txHash">
+              <a
+                  :href="`https://sepolia.etherscan.io/tx/${item.txHash}`"
+                  target="_blank"
+                  rel="noopener"
+                  style="color: #3b82f6; text-decoration: underline;"
+              >
+                View TX
+              </a>
+            </template>
+            <template v-else>
+              -
+            </template>
+          </td>
+          <td>
             <button class="photo-link" @click="openPhoto(item.photoUrl)">View photo</button>
           </td>
         </tr>
@@ -124,6 +140,26 @@
       <img :src="selectedPhotoUrl" alt="Measure Photo" />
       <button class="close-btn" @click="closeModal">Close</button>
     </div>
+  </div>
+  <div v-if="isLoading" class="modal-overlay">
+    <div class="modal-content">
+      <p>Processing transaction, please wait...</p>
+      <div class="spinner"></div>
+    </div>
+  </div>
+  <div v-if="transactionMessage" class="notification success">
+    {{ transactionMessage }}
+    <template v-if="transactionHash">
+      <br />
+      <a
+          :href="`https://sepolia.etherscan.io/tx/${transactionHash}`"
+          target="_blank"
+          rel="noopener"
+          style="color: #3b82f6; text-decoration: underline;"
+      >
+        View on Etherscan
+      </a>
+    </template>
   </div>
 </template>
 
@@ -145,6 +181,9 @@ onMounted(async () => {
 
 const showModal = ref(false)
 const selectedPhotoUrl = ref(null)
+
+const isLoading = ref(false)
+const transactionMessage = ref('')
 
 function openPhoto(photoUrl) {
   selectedPhotoUrl.value = `${BACKEND_URL}${photoUrl}`
@@ -216,15 +255,33 @@ function getRelativeTime(timestamp) {
   return diff === 0 ? 'Today' : `${diff} day${diff > 1 ? 's' : ''} ago`
 }
 
+const transactionHash = ref('')
+
 async function approve(id) {
+  isLoading.value = true
+  transactionMessage.value = ''
+  transactionHash.value = ''
   try {
-    await MeasureService.approveMeasure(id)
-    const measure = allMeasures.value.find(m => m.id === id)
-    if (measure) measure.status = 'APPROVED'
+    const result = await MeasureService.approveMeasure(id)
+    // Fetch the updated measure (with txHash)
+    const updated = await MeasureService.getMeasureById(id)
+    const idx = allMeasures.value.findIndex(m => m.id === id)
+    if (idx !== -1) allMeasures.value[idx] = updated
     showNotification('Measure approved successfully.', 'success')
+    // Extract TX hash if present
+    const match = result.match(/TX:([0-9a-fA-Fx]+)/)
+    if (match) {
+      transactionHash.value = match[1]
+      transactionMessage.value = 'Measure approved and 100 AQR tokens transferred.'
+    } else {
+      transactionMessage.value = result
+    }
   } catch (err) {
     console.error('Failed to approve measure:', err)
     showNotification('Failed to approve measure.', 'error')
+    transactionMessage.value = err.message
+  } finally {
+    isLoading.value = false
   }
 }
 
@@ -242,6 +299,21 @@ async function reject(id) {
 </script>
 
 <style scoped>
+.spinner {
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #3b82f6;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  animation: spin 1s linear infinite;
+  margin: 1rem auto;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
 .photo-link {
   background: none;
   border: none;

@@ -13,6 +13,7 @@ export function createMeasure(userId = null) {
         timestamp: new Date().toISOString(),
         status: 'PENDING',
         measureType: '',
+        txHash: '',
         area: null,
         capacity: null,
         files: [] // frontend only

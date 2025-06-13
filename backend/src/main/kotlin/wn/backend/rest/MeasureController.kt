@@ -85,18 +85,19 @@ class MeasureController(
         }
 
         measure.status = Measure.Status.APPROVED
-        measureRepositoryJPA.save(measure)
-
         // Transfer 100 AQR tokens to the user's wallet
         val user = measure.user
         val walletAddress = user.wallet
-        try {
-            contractService.transfer(walletAddress, BigInteger.valueOf(100).multiply(BigInteger.TEN.pow(18)))
+        return try {
+            val receipt = contractService.transfer(walletAddress, BigInteger.valueOf(100).multiply(BigInteger.TEN.pow(18)))
+            val txHash = receipt.transactionHash
+            measure.txHash = txHash // Save txHash
+            measureRepositoryJPA.save(measure)
+            ResponseEntity.ok("Measure approved and 100 AQR tokens transferred. TX:$txHash")
         } catch (e: Exception) {
-            return ResponseEntity.internalServerError().body("Measure approved, but token transfer failed: ${e.message}")
+            measureRepositoryJPA.save(measure)
+            ResponseEntity.internalServerError().body("Measure approved, but token transfer failed: ${e.message}")
         }
-
-        return ResponseEntity.ok("Measure approved and 100 AQR tokens transferred.")
     }
 
     // Reject a measure

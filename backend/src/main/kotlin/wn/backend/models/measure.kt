@@ -34,6 +34,9 @@ data class Measure(
     @Column(nullable = false)
     var measureType: String = "",
 
+    @Column(nullable = true)
+    var txHash: String? = null,
+
     var area: Double? = null,
 
     var capacity: Double? = null
