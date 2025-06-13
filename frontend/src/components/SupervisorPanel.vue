@@ -6,6 +6,9 @@
     </div>
 
     <div v-if="notification.message" :class="['notification', notification.type]">
+      <template v-if="notification.type === 'loading'">
+        <span class="mini-spinner" style="margin-right: 8px;"></span>
+      </template>
       {{ notification.message }}
     </div>
 
@@ -18,8 +21,8 @@
           <th></th>
           <th>Submitted</th>
           <th>User</th>
+          <th>Title</th>
           <th>Description</th>
-          <th>Type</th>
           <th>Area</th>
           <th>Capacity</th>
           <th>Location</th>
@@ -30,7 +33,6 @@
         </thead>
         <tbody>
         <tr v-for="item in pendingMeasures" :key="item.id">
-
           <td>
             <div :class="['icon-bg', getIconBg(item.measureType)]">
               <component :is="getIcon(item.measureType)" class="icon" :class="getIconColor(item.measureType)" />
@@ -38,32 +40,38 @@
           </td>
           <td>{{ getRelativeTime(item.timestamp) }}</td>
           <td>{{ item.user?.name || 'Unknown' }}</td>
-          <td>{{ item.description }}</td>
           <td>{{ item.measureType }}</td>
+          <td>
+            <div class="description-cell">
+              <span class="truncate-text">{{ truncateText(item.description, 60) }}</span>
+              <div v-if="item.description.length > 60" class="tooltip-wrapper">
+                <span class="info-icon">i</span>
+                <div class="tooltip-text">{{ item.description }}</div>
+              </div>
+            </div>
+          </td>
           <td>{{ item.area }} m²</td>
           <td>{{ item.capacity }} L</td>
           <td>{{ item.location }}</td>
           <td>
-            <span :class="['status-badge', getStatusClass(item.status)]">
-              {{ item.status }}
-            </span>
+            <span :class="['status-badge', getStatusClass(item.status)]">{{ item.status }}</span>
           </td>
           <td>
             <button class="photo-link" @click="openPhoto(item.photoUrl)">View photo</button>
           </td>
           <td>
-            <button class="btn approve" @click="approve(item.id)">
-              <CheckCircle class="btn-icon" /> Approve
-            </button>
-            <button class="btn reject" @click="reject(item.id)">
-              <XCircle class="btn-icon" /> Reject
-            </button>
+            <template v-if="!processingMeasures.has(item.id)">
+              <button class="btn approve" @click="approve(item.id)" :disabled="processing">
+                <CheckCircle class="btn-icon" /> Approve
+              </button>
+              <button class="btn reject" @click="reject(item.id)" :disabled="processing">
+                <XCircle class="btn-icon" /> Reject
+              </button>
+            </template>
           </td>
         </tr>
         <tr v-if="pendingMeasures.length === 0">
-          <td colspan="11" style="text-align: center; padding: 1rem; color: #6b7280;">
-            No pending measures found.
-          </td>
+          <td colspan="11" style="text-align: center; padding: 1rem; color: #6b7280;">No pending measures found.</td>
         </tr>
         </tbody>
       </table>
@@ -78,8 +86,8 @@
           <th></th>
           <th>Submitted</th>
           <th>User</th>
+          <th>Title</th>
           <th>Description</th>
-          <th>Type</th>
           <th>Area</th>
           <th>Capacity</th>
           <th>Location</th>
@@ -97,155 +105,138 @@
           </td>
           <td>{{ getRelativeTime(item.timestamp) }}</td>
           <td>{{ item.user?.name || 'Unknown' }}</td>
-          <td>{{ item.description }}</td>
           <td>{{ item.measureType }}</td>
+          <td>
+            <div class="description-cell">
+              <span class="truncate-text">{{ truncateText(item.description, 60) }}</span>
+              <div v-if="item.description.length > 60" class="tooltip-wrapper">
+                <span class="info-icon">i</span>
+                <div class="tooltip-text">{{ item.description }}</div>
+              </div>
+            </div>
+          </td>
           <td>{{ item.area }} m²</td>
           <td>{{ item.capacity }} L</td>
           <td>{{ item.location }}</td>
           <td>
-            <span :class="['status-badge', getStatusClass(item.status)]">
-              {{ item.status }}
-            </span>
+            <span v-if="item.status === 'APPROVED' && !item.txHash" class="status-badge submitting">Submitting...</span>
+            <span v-else :class="['status-badge', getStatusClass(item.status)]">{{ item.status }}</span>
           </td>
           <td>
             <template v-if="item.txHash">
-              <a
-                  :href="`https://sepolia.etherscan.io/tx/${item.txHash}`"
-                  target="_blank"
-                  rel="noopener"
-                  style="color: #3b82f6; text-decoration: underline;"
-              >
-                View TX
-              </a>
+              <a :href="`https://sepolia.etherscan.io/tx/${item.txHash}`" target="_blank" rel="noopener" style="color: #3b82f6; text-decoration: underline;">View TX</a>
             </template>
-            <template v-else>
-              -
-            </template>
+            <template v-else>-</template>
           </td>
           <td>
             <button class="photo-link" @click="openPhoto(item.photoUrl)">View photo</button>
           </td>
         </tr>
         <tr v-if="reviewedMeasures.length === 0">
-          <td colspan="10" style="text-align: center; padding: 1rem; color: #6b7280;">
-            No reviewed measures available.
-          </td>
+          <td colspan="11" style="text-align: center; padding: 1rem; color: #6b7280;">No reviewed measures available.</td>
         </tr>
         </tbody>
       </table>
     </div>
   </div>
+
   <div v-if="showModal" class="modal-overlay" @click.self="closeModal">
     <div class="modal-content">
       <img :src="selectedPhotoUrl" alt="Measure Photo" />
       <button class="close-btn" @click="closeModal">Close</button>
     </div>
   </div>
-  <div v-if="isLoading" class="modal-overlay">
-    <div class="modal-content">
-      <p>Processing transaction, please wait...</p>
-      <div class="spinner"></div>
-    </div>
-  </div>
-  <div v-if="transactionMessage" class="notification success">
-    {{ transactionMessage }}
-    <template v-if="transactionHash">
-      <br />
-      <a
-          :href="`https://sepolia.etherscan.io/tx/${transactionHash}`"
-          target="_blank"
-          rel="noopener"
-          style="color: #3b82f6; text-decoration: underline;"
-      >
-        View on Etherscan
-      </a>
+
+  <!-- Transaction Popup -->
+  <div v-if="transactionPopup.visible" class="transaction-popup">
+    <button class="close-popup" @click="closeTransactionPopup">×</button>
+
+    <template v-if="transactionPopup.status === 'submitted'">
+      <div class="spinner inline"></div>
+      <strong style="margin-left: 0.5rem;">Transaction submitted...</strong><br />
     </template>
+    <template v-else>
+      <strong>✓ Transaction completed</strong><br />
+    </template>
+
+    {{ transactionPopup.message }}<br />
+    <a
+        v-if="transactionPopup.hash"
+        :href="`https://sepolia.etherscan.io/tx/${transactionPopup.hash}`"
+        target="_blank"
+        rel="noopener"
+    >View on Etherscan</a>
+    <div class="progress-bar-wrapper" v-if="transactionPopup.status === 'completed'">
+      <div class="progress-bar" :style="{ width: transactionPopup.progress + '%' }"></div>
+    </div>
   </div>
 </template>
 
 <script setup>
-import { onMounted, ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { CheckCircle, XCircle, Droplets, Leaf, TreePine } from 'lucide-vue-next'
 import MeasureService from '@/services/MeasureService'
-import { BACKEND_URL } from '@/services/session.js';
+import { BACKEND_URL } from '@/services/session.js'
 
 const allMeasures = ref([])
-
-onMounted(async () => {
-  try {
-    allMeasures.value = await MeasureService.getAllMeasures()
-  } catch (error) {
-    console.error('Failed to fetch measures:', error)
-  }
-})
-
+const loadingStates = ref({})
+const processingMeasures = ref(new Set())
 const showModal = ref(false)
 const selectedPhotoUrl = ref(null)
 
-const isLoading = ref(false)
-const transactionMessage = ref('')
-
-function openPhoto(photoUrl) {
-  selectedPhotoUrl.value = `${BACKEND_URL}${photoUrl}`
-  showModal.value = true
-}
-
-function closeModal() {
-  showModal.value = false
-  selectedPhotoUrl.value = null
-}
-
-const pendingMeasures = computed(() =>
-    allMeasures.value.filter(m => m.status === 'PENDING')
-)
-
-const reviewedMeasures = computed(() =>
-    allMeasures.value.filter(m => m.status === 'APPROVED' || m.status === 'REJECTED')
-)
-
 const notification = ref({ message: '', type: '' })
+const processing = ref(false)
 
-function showNotification(msg, type = 'success') {
-  notification.value = { message: msg, type }
-  setTimeout(() => {
-    notification.value = { message: '', type: '' }
-  }, 3000)
+const transactionPopup = ref({
+  visible: false,
+  status: 'submitted',
+  message: '',
+  hash: '',
+  progress: 100,
+  intervalId: null
+})
+
+onMounted(async () => {
+  allMeasures.value = await MeasureService.getAllMeasures()
+})
+
+const pendingMeasures = computed(() => allMeasures.value.filter(m => m.status === 'PENDING'))
+const reviewedMeasures = computed(() => allMeasures.value.filter(m => ['APPROVED', 'REJECTED'].includes(m.status)))
+
+function truncateText(text, maxLength) {
+  return text.length > maxLength ? text.slice(0, maxLength) + '…' : text
 }
 
 function getIcon(type) {
-  switch (type) {
-    case 'Rain Barrel': return Droplets
-    case 'Green Roof': return Leaf
-    case 'Pavement': return TreePine
-    default: return Droplets
-  }
+  return {
+    'Rain Barrel': Droplets,
+    'Green Roof': Leaf,
+    'Pavement': TreePine
+  }[type] || Droplets
 }
 
 function getIconBg(type) {
-  switch (type) {
-    case 'Rain Barrel': return 'icon-bg-blue'
-    case 'Green Roof': return 'icon-bg-green'
-    case 'Pavement': return 'icon-bg-purple'
-    default: return 'icon-bg-blue'
-  }
+  return {
+    'Rain Barrel': 'icon-bg-blue',
+    'Green Roof': 'icon-bg-green',
+    'Pavement': 'icon-bg-purple'
+  }[type] || 'icon-bg-blue'
 }
 
 function getIconColor(type) {
-  switch (type) {
-    case 'Rain Barrel': return 'icon-blue'
-    case 'Green Roof': return 'icon-green'
-    case 'Pavement': return 'icon-purple'
-    default: return 'icon-blue'
-  }
+  return {
+    'Rain Barrel': 'icon-blue',
+    'Green Roof': 'icon-green',
+    'Pavement': 'icon-purple'
+  }[type] || 'icon-blue'
 }
 
 function getStatusClass(status) {
-  switch (status) {
-    case 'PENDING': return 'pending'
-    case 'APPROVED': return 'approved'
-    case 'REJECTED': return 'rejected'
-    default: return ''
-  }
+  return {
+    'PENDING': 'pending',
+    'APPROVED': 'approved',
+    'REJECTED': 'rejected'
+  }[status] || ''
 }
 
 function getRelativeTime(timestamp) {
@@ -255,63 +246,239 @@ function getRelativeTime(timestamp) {
   return diff === 0 ? 'Today' : `${diff} day${diff > 1 ? 's' : ''} ago`
 }
 
-const transactionHash = ref('')
+function openPhoto(url) {
+  selectedPhotoUrl.value = `${BACKEND_URL}${url}`
+  showModal.value = true
+}
+
+function closeModal() {
+  showModal.value = false
+}
+
+function showNotification(msg, type = 'success') {
+  notification.value = { message: msg, type }
+  setTimeout(() => (notification.value = { message: '', type: '' }), 3000)
+}
+
+function closeTransactionPopup() {
+  clearInterval(transactionPopup.value.intervalId)
+  transactionPopup.value.visible = false
+}
+
+function showTransactionPopup(message, hash = '', status = 'submitted') {
+  transactionPopup.value.visible = true
+  transactionPopup.value.status = status
+  transactionPopup.value.message = message
+  transactionPopup.value.hash = hash
+  transactionPopup.value.progress = 100
+
+  if (status === 'completed') {
+    const interval = setInterval(() => {
+      transactionPopup.value.progress -= 2
+      if (transactionPopup.value.progress <= 0) {
+        closeTransactionPopup()
+      }
+    }, 120)
+    transactionPopup.value.intervalId = interval
+  }
+}
 
 async function approve(id) {
-  isLoading.value = true
-  transactionMessage.value = ''
-  transactionHash.value = ''
+  if (!confirm('Are you sure you want to approve this measure?')) return
+  processing.value = true
+  showTransactionPopup('Waiting for confirmation...', '', 'submitted')
+
   try {
     const result = await MeasureService.approveMeasure(id)
-    // Fetch the updated measure (with txHash)
-    const updated = await MeasureService.getMeasureById(id)
-    const idx = allMeasures.value.findIndex(m => m.id === id)
-    if (idx !== -1) allMeasures.value[idx] = updated
-    showNotification('Measure approved successfully.', 'success')
-    // Extract TX hash if present
+
     const match = result.match(/TX:([0-9a-fA-Fx]+)/)
-    if (match) {
-      transactionHash.value = match[1]
-      transactionMessage.value = 'Measure approved and 100 AQR tokens transferred.'
-    } else {
-      transactionMessage.value = result
-    }
+    const hash = match ? match[1] : ''
+    if (hash) transactionPopup.value.hash = hash
+
+    const interval = setInterval(async () => {
+      const updated = await MeasureService.getMeasureById(id)
+      if (updated.txHash) {
+        clearInterval(interval)
+        const idx = allMeasures.value.findIndex(m => m.id === id)
+        if (idx !== -1) allMeasures.value[idx] = updated
+        showTransactionPopup('Transaction completed.', updated.txHash, 'completed')
+        processing.value = false
+      }
+    }, 3000)
   } catch (err) {
-    console.error('Failed to approve measure:', err)
-    showNotification('Failed to approve measure.', 'error')
-    transactionMessage.value = err.message
-  } finally {
-    isLoading.value = false
+    console.error(err)
+    showNotification('Approval failed.', 'error')
+    processing.value = false
+    closeTransactionPopup()
   }
 }
 
 async function reject(id) {
+  if (!confirm('Are you sure you want to reject this measure?')) return
+  processing.value = true
+  loadingStates.value[id] = true
   try {
     await MeasureService.rejectMeasure(id)
     const measure = allMeasures.value.find(m => m.id === id)
     if (measure) measure.status = 'REJECTED'
     showNotification('Measure rejected.', 'error')
   } catch (err) {
-    console.error('Failed to reject measure:', err)
     showNotification('Failed to reject measure.', 'error')
+  } finally {
+    loadingStates.value[id] = false
   }
 }
 </script>
 
 <style scoped>
-.spinner {
-  border: 4px solid #f3f3f3;
-  border-top: 4px solid #3b82f6;
+.description-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  max-width: 200px;
+}
+
+.truncate-text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tooltip-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+
+.info-icon {
+  font-family: 'Inter', 'Segoe UI', sans-serif;
+  background-color: rgba(37, 99, 235, 0.61);
+  color: white;
+  border-radius: 9999px;
+  padding: 0.1rem 0.6rem;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.tooltip-text {
+  visibility: hidden;
+  opacity: 0;
+  width: 200px;
+  background-color: #111827;
+  color: #fff;
+  text-align: left;
+  padding: 0.5rem;
+  border-radius: 0.375rem;
+  position: absolute;
+  z-index: 10;
+  bottom: 125%;
+  left: 50%;
+  transform: translateX(-50%);
+  transition: opacity 0.3s ease;
+  font-size: 0.75rem;
+  line-height: 1.2;
+  white-space: normal;
+}
+
+.tooltip-wrapper:hover .tooltip-text {
+  visibility: visible;
+  opacity: 1;
+}
+
+.close-popup {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: #3b82f6;
+  border: none;
+  border-radius: 50px;
+  color: white;
+  font-size: 1.25rem;
+  cursor: pointer;
+}
+
+.spinner.inline {
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid #3b82f6;
   border-radius: 50%;
-  width: 32px;
-  height: 32px;
+  width: 18px;
+  height: 18px;
   animation: spin 1s linear infinite;
-  margin: 1rem auto;
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 0.5rem;
+}
+
+.mini-spinner {
+  border: 2px solid white;
+  border-top: 2px solid #3b82f6;
+  border-radius: 50%;
+  width: 14px;
+  height: 14px;
+  animation: spin 1s linear infinite;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.status-badge.submitting {
+  background-color: #3b82f6;
 }
 
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
+}
+.transaction-popup {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  background-color: #1f2937;
+  color: white;
+  padding: 1rem 2.55rem 1rem 1.25rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  z-index: 9999;
+  max-width: 360px;
+  font-size: 0.875rem;
+  overflow: hidden;
+  transition: opacity 0.3s ease;
+}
+
+.progress-bar-wrapper {
+  width: 100%;
+  background-color: rgba(255, 255, 255, 0.15);
+  height: 4px;
+  border-radius: 4px;
+  margin-top: 0.5rem;
+  overflow: hidden;
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.progress-bar {
+  height: 100%;
+  background-color: #3b82f6;
+  transition: width 0.1s linear;
+}
+
+.transaction-popup a {
+  color: #3b82f6;
+  text-decoration: underline;
+  font-size: 0.875rem;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .photo-link {
