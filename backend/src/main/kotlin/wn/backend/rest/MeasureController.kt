@@ -12,6 +12,7 @@ import java.util.Base64
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.nio.file.StandardOpenOption
+import java.time.Instant
 
 @RestController
 @RequestMapping("/api/measures")
@@ -114,4 +115,39 @@ class MeasureController(
         measureRepositoryJPA.save(measure)
         return ResponseEntity.ok("Measure rejected successfully.")
     }
+
+    @GetMapping("/user/{userId}/rewards")
+    fun getUserOnChainRewards(
+        @PathVariable userId: Long,
+        @RequestParam(defaultValue = "0") page: Int,
+        @RequestParam(defaultValue = "10") size: Int
+    ): ResponseEntity<Map<String, Any>> {
+        val user = userRepositoryJPA.findById(userId).orElse(null)
+            ?: return ResponseEntity.badRequest().build()
+
+        val wallet = user.wallet
+        val allTransfers = contractService.getOnChainTransfersToUser(wallet)
+            .sortedByDescending { it.timestamp }
+
+        val start = page * size
+        val end = (start + size).coerceAtMost(allTransfers.size)
+        val pageTransfers = if (start >= allTransfers.size) emptyList() else allTransfers.subList(start, end)
+
+        val content = pageTransfers.map {
+            mapOf(
+                "title" to "On-Chain Reward",
+                "date" to it.timestamp,
+                "tx" to it.tx,
+                "amount" to it.amount.divide(BigInteger.TEN.pow(18)).toInt()
+            )
+        }
+
+        return ResponseEntity.ok(
+            mapOf(
+                "content" to content,
+                "totalElements" to allTransfers.size
+            )
+        )
+    }
+
 }

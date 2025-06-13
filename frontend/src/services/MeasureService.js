@@ -56,6 +56,24 @@ class MeasureService {
             throw new Error(error.response?.data || 'Failed to reject measure');
         }
     }
+
+    async getUserRewardsPaginated(userId, page = 0, size = 10) {
+        try {
+            const response = await axios.get(`/api/measures/user/${userId}/rewards`, {
+                params: { page, size }
+            });
+
+            const { content, totalElements } = response.data;
+            return {
+                data: content,
+                total: totalElements
+            };
+        } catch (error) {
+            console.error('Failed to fetch paginated rewards:', error);
+            return { data: [], total: 0 };
+        }
+    }
+
 }
 
 export default new MeasureService();

@@ -29,6 +29,13 @@ public class HydRewards extends Contract {
     public static final String FUNC_SYMBOL = "symbol";
     public static final String FUNC_DECIMALS = "decimals";
     public static final String FUNC_BALANCES = "balances";
+    public static final Event TRANSFER_EVENT = new Event("Transfer",
+            Arrays.asList(
+                    new TypeReference<Address>(true) {},
+                    new TypeReference<Address>(true) {},
+                    new TypeReference<Uint256>(false) {}
+            )
+    );
 
     protected HydRewards(String contractAddress, Web3j web3j, Credentials credentials, ContractGasProvider contractGasProvider) {
         super(BINARY, contractAddress, web3j, credentials, contractGasProvider);

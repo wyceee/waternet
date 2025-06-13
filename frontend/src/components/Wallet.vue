@@ -1,56 +1,85 @@
-<!-- src/components/Wallet.vue -->
 <template>
   <div>
-    <div class="header">
-      <h1 class="title">Wallet</h1>
-      <p class="subtitle">Manage your AquaRewards tokens</p>
+    <!-- Loading spinner -->
+    <div v-if="!isLoaded" style="text-align: center; padding: 4rem;">
+      <span class="mini-spinner"></span>
     </div>
 
-    <div class="balance-card">
-      <div class="balance-content">
-        <div>
-          <p class="balance-label">Total Balance</p>
-          <p class="balance-amount">
-            <template v-if="userBalance !== null">
-              {{ (BigInt(userBalance) / 10n ** 18n).toLocaleString() }} HYD
-            </template>
-            <template v-else>
-              Loading...
-            </template>
-          </p>
-        </div>
-        <div class="balance-icon">
-          <Coins class="icon" />
-        </div>
+    <!-- Main content -->
+    <div v-else>
+      <div class="header">
+        <h1 class="title">Wallet</h1>
+        <p class="subtitle">Manage your AquaRewards tokens</p>
       </div>
-    </div>
 
-    <div class="transactions-panel">
-      <div class="transactions-header">
-        <h3 class="transactions-title">Recent Transactions</h3>
-        <p class="transactions-subtitle">Your latest token transactions</p>
+      <div class="balance-card">
+        <div class="balance-content">
+          <div>
+            <p class="balance-label">Total Balance</p>
+            <p class="balance-amount">
+              <template v-if="userBalance !== null">
+                {{ (BigInt(userBalance) / 10n ** 18n).toLocaleString() }} HYD
+              </template>
+              <template v-else>
+                Loading...
+              </template>
+            </p>
+          </div>
+          <div class="balance-icon">
+            <Coins class="icon" />
+          </div>
+        </div>
       </div>
-      <ul class="transactions-list">
-        <li v-for="(txn, index) in transactions" :key="index" class="transaction-item">
-          <div class="transaction-row">
-            <div class="transaction-left">
-              <div class="icon-wrapper">
-                <div class="icon-bg">
-                  <Plus class="transaction-icon" />
+
+      <div class="transactions-panel">
+        <div class="transactions-header">
+          <h3 class="transactions-title">Recent Transactions</h3>
+          <p class="transactions-subtitle">Your latest token transactions</p>
+        </div>
+        <ul class="transactions-list">
+          <li
+              v-for="(txn, index) in transactions"
+              :key="index"
+              class="transaction-item"
+          >
+            <div class="transaction-row">
+              <div class="transaction-left">
+                <div class="icon-wrapper">
+                  <div class="icon-bg">
+                    <Plus class="transaction-icon" />
+                  </div>
+                </div>
+                <div class="transaction-info">
+                  <div class="transaction-title">{{ txn.title }}</div>
+                  <div class="transaction-date-tx">
+                    {{ txn.date }} •
+                    <a
+                        :href="`https://sepolia.etherscan.io/tx/${txn.tx}`"
+                        target="_blank"
+                        rel="noopener"
+                        style="color: #3b82f6; text-decoration: underline;"
+                    >View TX</a>
+                  </div>
                 </div>
               </div>
-              <div class="transaction-info">
-                <div class="transaction-title">{{ txn.title }}</div>
-                <div class="transaction-date-tx">{{ txn.date }} • Tx: {{ txn.tx }}</div>
+              <div class="transaction-right">
+                <div class="transaction-amount">+{{ txn.amount }} HYD</div>
+                <div class="transaction-usd">{{ txn.usd }}</div>
               </div>
             </div>
-            <div class="transaction-right">
-              <div class="transaction-amount">{{ txn.amount }}</div>
-              <div class="transaction-usd">{{ txn.usd }}</div>
-            </div>
-          </div>
-        </li>
-      </ul>
+          </li>
+
+          <li v-if="transactions.length === 0" class="transaction-item" style="text-align: center; color: #6b7280;">
+            No reward transactions yet.
+          </li>
+
+          <li v-if="hasMore" style="text-align:center; padding: 1rem;">
+            <button @click="loadNextPage" :disabled="loading" style="padding: 0.5rem 1rem;">
+              {{ loading ? 'Loading...' : 'Load More' }}
+            </button>
+          </li>
+        </ul>
+      </div>
     </div>
   </div>
 </template>
@@ -58,6 +87,7 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import UserBalanceService from '../services/UserBalanceService.js';
+import MeasureService from "@/services/MeasureService.js";
 import { SessionService } from '@/services/SessionService';
 import { Coins, Plus } from 'lucide-vue-next';
 
@@ -65,20 +95,82 @@ const sessionService = new SessionService('/api', 'session_token');
 const userId = sessionService.user?.id;
 const userBalance = ref(null);
 
+const transactions = ref([]);
+const page = ref(0);
+const size = 10;
+const isLoaded = ref(false);
+const loading = ref(false);
+const hasMore = ref(true);
+const totalItems = ref(0);
+
+function formatDate(dateStr) {
+  const now = new Date();
+  const date = new Date(dateStr);
+  const diff = Math.floor((now - date) / 1000);
+
+  if (diff < 60) return `${diff} sec ago`;
+  if (diff < 3600) return `${Math.floor(diff / 60)} min ago`;
+  if (diff < 86400) return `${Math.floor(diff / 3600)} hrs ago`;
+
+  return date.toLocaleDateString();
+}
+
+async function loadNextPage() {
+  if (loading.value || !hasMore.value) return;
+
+  loading.value = true;
+  try {
+    const response = await MeasureService.getUserRewardsPaginated(userId, page.value, size);
+
+    const newTxns = response.data;
+    totalItems.value = response.total;
+
+    if (newTxns.length < size) hasMore.value = false;
+    else page.value++;
+
+    const formatted = newTxns.map(txn => ({
+      ...txn,
+      date: formatDate(txn.date),
+      usd: ''
+    }));
+
+    transactions.value.push(...formatted);
+  } catch (error) {
+    console.error('Failed to load transactions:', error);
+  } finally {
+    loading.value = false;
+  }
+}
+
 onMounted(async () => {
   if (userId) {
-    userBalance.value = await UserBalanceService.getUserBalance(userId);
+    try {
+      userBalance.value = await UserBalanceService.getUserBalance(userId);
+      await loadNextPage();
+    } catch (error) {
+      console.error('Wallet load failed:', error);
+    } finally {
+      isLoaded.value = true;
+    }
   }
 });
-
-const transactions = [
-  { title: 'Reward for Green Roof', date: '2 days ago', tx: '0x1a2b3c...', amount: '+75 HYD', usd: '$7.50' },
-  { title: 'Reward for Rain Garden', date: '1 week ago', tx: '0x4d5e6f...', amount: '+50 HYD', usd: '$5.00' },
-  { title: 'Reward for Permeable Pavement', date: '2 weeks ago', tx: '0x7g8h9i...', amount: '+100 HYD', usd: '$10.00' }
-];
 </script>
 
 <style scoped>
+.mini-spinner {
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  border: 3px solid rgba(0,0,0,0.1);
+  border-top-color: #3b82f6;
+  border-radius: 50%;
+  animation: spin 1s ease infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
 .header {
   margin-bottom: 2rem;
 }

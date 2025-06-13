@@ -1,10 +1,7 @@
 package wn.backend.repositories
 
 import org.springframework.data.jpa.repository.JpaRepository
-import org.springframework.data.jpa.repository.Modifying
-import org.springframework.data.jpa.repository.Query
 import org.springframework.stereotype.Repository
-import org.springframework.transaction.annotation.Transactional
 import wn.backend.models.Measure
 import java.util.Optional
 
@@ -18,14 +15,4 @@ interface MeasureRepository : JpaRepository<Measure, Long> {
     fun findAllByUserId(userId: Long): List<Measure>
 
     fun save (measure: Measure): Measure
-
-    @Modifying
-    @Transactional
-    @Query("UPDATE Measure m SET m.status = 'APPROVED' WHERE m.id = :id AND m.status = 'PENDING'")
-    fun approve(id: Long): Int
-
-    @Modifying
-    @Transactional
-    @Query("UPDATE Measure m SET m.status = 'REJECTED' WHERE m.id = :id AND m.status = 'PENDING'")
-    fun reject(id: Long): Int
 }
