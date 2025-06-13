@@ -9,7 +9,7 @@ data class MeasureDTO(
     val timestamp: Instant,
     val status: Measure.Status,
     val measureType: String,
-    val txHash: String,
+    val txHash: String?,
     val area: Double?,
     val capacity: Double?
 )

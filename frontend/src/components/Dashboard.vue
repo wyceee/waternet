@@ -100,7 +100,7 @@
             </div>
             <div class="measure-text">
               <div class="measure-header">
-                <div class="measure-name">{{ measure.description }}</div>
+                <div class="measure-name">{{ measure.measureType }}</div>
                 <svg
                     class="expand-icon"
                     :class="{ rotated: expandedMeasureId === measure.id }"
@@ -116,6 +116,7 @@
             </div>
           </div>
           <div v-show="expandedMeasureId === measure.id" class="measure-extra-info">
+            <div class="measure-location">Description: {{ measure.description }}</div>
             <div class="measure-location">Location: {{ measure.location }}</div>
             <div class="measure-area">Area: {{ measure.area }} m²</div>
             <div class="measure-capacity">Capacity: {{ measure.capacity }} liters</div>
