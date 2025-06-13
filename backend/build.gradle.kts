@@ -16,6 +16,14 @@ java {
 	}
 }
 
+sourceSets {
+	main {
+		java {
+			srcDirs("src/main/java", "src/main/kotlin")
+		}
+	}
+}
+
 repositories {
 	mavenCentral()
 }
