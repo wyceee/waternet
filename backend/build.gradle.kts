@@ -32,6 +32,7 @@ dependencies {
 	implementation("io.jsonwebtoken:jjwt-impl:0.11.5")
 	implementation("io.jsonwebtoken:jjwt-jackson:0.11.5")
 	implementation ("org.web3j:core:4.9.4")
+	implementation ("io.github.cdimascio:dotenv-java:3.0.0")
 	developmentOnly("org.springframework.boot:spring-boot-devtools")
 	runtimeOnly("org.postgresql:postgresql")
 	runtimeOnly("com.h2database:h2")

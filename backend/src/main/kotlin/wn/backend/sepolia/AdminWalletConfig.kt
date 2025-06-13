@@ -1,5 +1,4 @@
-package wn.backend.sepolia
-
+import io.github.cdimascio.dotenv.Dotenv
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.web3j.crypto.Credentials
@@ -8,7 +7,8 @@ import org.web3j.crypto.Credentials
 class AdminWalletConfig {
     @Bean
     fun adminCredentials(): Credentials {
-        val privateKey = System.getenv("ADMIN_PRIVATE_KEY") // Or from application.properties
+        val dotenv = Dotenv.load()
+        val privateKey = dotenv["ADMIN_PRIVATE_KEY"]
         require(!privateKey.isNullOrBlank()) { "ADMIN_PRIVATE_KEY must be set!" }
         return Credentials.create(privateKey)
     }
