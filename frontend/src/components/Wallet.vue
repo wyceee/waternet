@@ -10,8 +10,14 @@
       <div class="balance-content">
         <div>
           <p class="balance-label">Total Balance</p>
-          <p class="balance-amount">1,250 HYD</p>
-          <p class="balance-usd">≈ $125.00 USD</p>
+          <p class="balance-amount">
+            <template v-if="userBalance !== null">
+              {{ (BigInt(userBalance) / 10n ** 18n).toLocaleString() }} HYD
+            </template>
+            <template v-else>
+              Loading...
+            </template>
+          </p>
         </div>
         <div class="balance-icon">
           <Coins class="icon" />
@@ -50,7 +56,20 @@
 </template>
 
 <script setup>
+import { ref, onMounted } from 'vue';
+import UserBalanceService from '../services/UserBalanceService.js';
+import { SessionService } from '@/services/SessionService';
 import { Coins, Plus } from 'lucide-vue-next';
+
+const sessionService = new SessionService('/api', 'session_token');
+const userId = sessionService.user?.id;
+const userBalance = ref(null);
+
+onMounted(async () => {
+  if (userId) {
+    userBalance.value = await UserBalanceService.getUserBalance(userId);
+  }
+});
 
 const transactions = [
   { title: 'Reward for Green Roof', date: '2 days ago', tx: '0x1a2b3c...', amount: '+75 HYD', usd: '$7.50' },

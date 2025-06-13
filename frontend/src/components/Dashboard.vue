@@ -63,7 +63,14 @@
             <div class="text-wrapper">
               <dl>
                 <dt class="label">Tokens Earned</dt>
-                <dd class="value">1,250 HYD</dd>
+                <dd class="value">
+                  <template v-if="userBalance !== null">
+                    {{ (BigInt(userBalance) / 10n ** 18n).toLocaleString() }} HYD
+                  </template>
+                  <template v-else>
+                    Loading...
+                  </template>
+                </dd>
               </dl>
             </div>
           </div>
@@ -145,6 +152,7 @@
 import { BarChart3, CheckCircle, Clock, Coins, Droplets, Leaf, TreePine } from 'lucide-vue-next';
 import {SessionService} from '@/services/SessionService';
 import MeasureService from '@/services/MeasureService';
+import UserBalanceService from "@/services/UserBalanceService.js";
 import {computed, onMounted, ref} from 'vue';
 import { BACKEND_URL } from '@/services/session.js';
 
@@ -153,12 +161,15 @@ const sessionService = new SessionService('/api', 'session_token');
 const userId = sessionService.user?.id;
 
 const userMeasures = ref([]);
+const userBalance = ref(null);
 
 onMounted(async () => {
   if (!userId) return;
 
   try {
     userMeasures.value = await MeasureService.getMeasuresByUserId(userId);
+    userBalance.value = await UserBalanceService.getUserBalance(userId);
+    console.log('User measures loaded:', userMeasures.value);
   } catch (err) {
     console.error('Failed to load user measures:', err);
   }
