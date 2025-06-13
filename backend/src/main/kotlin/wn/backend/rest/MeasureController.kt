@@ -6,6 +6,8 @@ import org.springframework.web.bind.annotation.*
 import wn.backend.models.Measure
 import wn.backend.repositories.MeasureRepositoryJPA
 import wn.backend.repositories.UserRepositoryJPA
+import wn.backend.sepolia.ContractService
+import java.math.BigInteger
 import java.util.Base64
 import java.nio.file.Files
 import java.nio.file.Paths
@@ -15,7 +17,8 @@ import java.nio.file.StandardOpenOption
 @RequestMapping("/api/measures")
 class MeasureController(
     private val measureRepositoryJPA: MeasureRepositoryJPA,
-    private val userRepositoryJPA: UserRepositoryJPA
+    private val userRepositoryJPA: UserRepositoryJPA,
+    private val contractService: ContractService
 ) {
 
     // Get all measures
@@ -72,7 +75,6 @@ class MeasureController(
         return ResponseEntity.ok(saved)
     }
 
-    // Approve a measure
     @PostMapping("/{id}/approve")
     fun approveMeasure(@PathVariable id: Long): ResponseEntity<String> {
         val measure = measureRepositoryJPA.findById(id).orElse(null)
@@ -84,7 +86,17 @@ class MeasureController(
 
         measure.status = Measure.Status.APPROVED
         measureRepositoryJPA.save(measure)
-        return ResponseEntity.ok("Measure approved successfully.")
+
+        // Transfer 100 AQR tokens to the user's wallet
+        val user = measure.user
+        val walletAddress = user.wallet
+        try {
+            contractService.transfer(walletAddress, BigInteger.valueOf(100).multiply(BigInteger.TEN.pow(18)))
+        } catch (e: Exception) {
+            return ResponseEntity.internalServerError().body("Measure approved, but token transfer failed: ${e.message}")
+        }
+
+        return ResponseEntity.ok("Measure approved and 100 AQR tokens transferred.")
     }
 
     // Reject a measure
