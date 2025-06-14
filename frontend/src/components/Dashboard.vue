@@ -170,7 +170,6 @@ onMounted(async () => {
   try {
     userMeasures.value = await MeasureService.getMeasuresByUserId(userId);
     userBalance.value = await UserBalanceService.getUserBalance(userId);
-    console.log('User measures loaded:', userMeasures.value);
   } catch (err) {
     console.error('Failed to load user measures:', err);
   }

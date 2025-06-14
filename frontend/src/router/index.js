@@ -24,7 +24,6 @@ const router = createRouter({
     routes
 });
 
-// Make sessionService reactive
 const reactiveSessionService = reactive(sessionService);
 
 router.beforeEach((to, from, next) => {

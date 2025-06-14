@@ -61,18 +61,16 @@ async function handleSignup() {
       privateKey.value = data.privateKey;
     }
   } catch (error) {
-    // Optionally handle error silently or show in UI
   }
 }
 
 function closeModal() {
   privateKey.value = null;
-  router.push('/login'); // Redirect to login page after closing modal
+  router.push('/login');
 }
 
-// Example hashing function (replace with actual implementation)
 async function hashPassword(password) {
-  return password; // Replace with actual hashing logic
+  return password;
 }
 </script>
 

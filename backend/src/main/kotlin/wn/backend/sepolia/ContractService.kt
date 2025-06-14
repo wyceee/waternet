@@ -31,7 +31,7 @@ class ContractService(
             DefaultBlockParameterName.LATEST,
             contract.contractAddress
         ).addSingleTopic(transferEventHash)
-            .addNullTopic()  // from (anyone)
+            .addNullTopic()
             .addOptionalTopics("0x" + toAddress.lowercase().removePrefix("0x").padStart(64, '0'))  // to
 
         val logs = web3j.ethGetLogs(filter).send().logs

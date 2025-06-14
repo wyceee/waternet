@@ -23,14 +23,12 @@ const email = ref('');
 const password = ref('');
 const router = useRouter();
 
-// Inject SessionService
 const sessionService = inject('sessionService');
 
 async function handleLogin() {
   try {
     const user = await sessionService.signIn(email.value, password.value);
     if (user) {
-      console.log('JWT Token:', sessionService.getCurrentToken()); // Log the JWT token
       alert('Login successful!');
       router.push('/');
     } else {

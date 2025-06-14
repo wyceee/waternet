@@ -10,9 +10,6 @@ export class SessionService {
         this.token = null;
         this.user = null;
 
-        console.log("BROWSER_STORAGE_ITEM_NAME:", this.BROWSER_STORAGE_ITEM_NAME); // Debugging
-
-        // Initialize session from browser storage
         this.getTokenFromBrowserStorage();
     }
 

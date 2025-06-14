@@ -86,7 +86,6 @@ class AuthenticationController {
 
             val savedUser = userRepository.save(newUser)
 
-            // Convert to UserDTO
             val userDTO = UserDTO(
                 id = savedUser.id,
                 name = savedUser.name,

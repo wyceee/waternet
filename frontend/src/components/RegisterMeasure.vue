@@ -146,11 +146,8 @@ async function submitForm() {
     capacity: form.value.capacity ?? 0
   };
 
-  console.log('Measure structure:', measurePayload);
-
   try {
     const response = await MeasureService.submitMeasure(measurePayload);
-    console.log('Submitted measure:', response);
     alert('Submitted for supervisor approval!');
   } catch (error) {
     alert(error.message);

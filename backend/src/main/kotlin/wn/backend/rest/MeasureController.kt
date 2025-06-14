@@ -22,14 +22,12 @@ class MeasureController(
     private val contractService: ContractService
 ) {
 
-    // Get all measures
     @GetMapping
     fun getAllMeasures(): ResponseEntity<List<Measure>> {
         val measures = measureRepositoryJPA.findAll()
         return ResponseEntity.ok(measures)
     }
 
-    // Get measure by ID
     @GetMapping("/{id}")
     fun getMeasureById(@PathVariable id: Long): ResponseEntity<Measure> {
         val measure = measureRepositoryJPA.findById(id)
@@ -40,7 +38,6 @@ class MeasureController(
         }
     }
 
-    // Get all measures by user ID
     @GetMapping("/user/{userId}")
     fun getMeasuresByUserId(@PathVariable userId: Long): ResponseEntity<List<Measure>> {
         val measures = measureRepositoryJPA.findAllByUserId(userId)
@@ -101,7 +98,6 @@ class MeasureController(
         }
     }
 
-    // Reject a measure
     @PostMapping("/{id}/reject")
     fun rejectMeasure(@PathVariable id: Long): ResponseEntity<String> {
         val measure = measureRepositoryJPA.findById(id).orElse(null)

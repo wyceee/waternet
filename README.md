@@ -1,6 +1,6 @@
 # 💧 Water Infiltration Web3 App
 
-This project is a Web3 application that encourages households to implement rainwater retention measures (such as green roofs, rain barrels, etc.). When a measure is approved, the household receives token rewards via smart contracts on the Ethereum testnet blockchain.
+This project is a Web3 application that encourages households to implement rainwater retention measures (such as green roofs, rain barrels, etc.). When a measure is approved, the household receives token rewards via smart contracts on the Ethereum testnet blockchain. [Flow Architecture](FLOW_ARCHITECTURE.md), [ERD](ERD.md).
 
 ---
 
@@ -13,13 +13,13 @@ Users can see an overview of their water retention measures, their status and to
 Users can upload photos and explanations of their water retention measures.
 
 ✅ **Supervisor approval**  
-A designated supervisor verifies and approves/rejects submitted measures.
+A designated supervisor verifies and approves/rejects submitted measures. After approval, the user receives tokens as a reward and both ends will see the tx ID links.
 
 ✅ **Token rewards**  
 Once approved, users receive tokens via smart contracts on the Ethereum testnet blockchain.
 
 ✅ **Wallet overview**  
-Users can view their token balance and the recent transactions to their wallet.
+Users can view their token balance and the recent transactions to their wallet with tx ID links.
 
 ✅ **Wallet creation**  
 After registration, a wallet is automatically created for the user and prompted with the wallet private key (they only need this if they lose their account credentials), allowing them to receive tokens.
@@ -29,6 +29,7 @@ Every endpoint is protected by authentication with roles and JWTokens, and users
 
 ✅ **Fully dynamic authentication**  
 No web3 wallet or tx signing is required for users and supervisors! Everything is handled in the backend.
+
 ---
 
 ## 🛠️ Tech Stack
@@ -46,7 +47,6 @@ No web3 wallet or tx signing is required for users and supervisors! Everything i
     - The smart contract is written in Solidity and deployed on the Ethereum testnet.
     - The contract allows minting tokens, transferring tokens, and querying balances.
     - [Blockchain explorer](https://sepolia.etherscan.io/token/0x1e989dc25884a3a0c301d41af336e1efb615073e)
-
 ---
 
 ## ⚙️ Running the project
@@ -70,24 +70,15 @@ cd backend
 ./mvnw spring-boot:run
 ```
 
-### 🗄️ Database
-The backend uses an in-memory H2 database, which is automatically created and populated with initial data on startup. You can access the H2 console at [http://localhost:8085/h2-console](http://localhost:8085/h2-console). The only credentials you need is `sa` as the username, and jdbc link from the backend creation logs and leave the password field empty.
-
----
-
-## 🔗 API Communication
-
-- **Frontend ↔️ Backend:**  
-  REST API for measure registration, uploads, supervisor approval, wallet overview, and data queries.
-
-- **Backend ↔️ Blockchain:**  
-- The Ethereum node RPC URL and admin wallet private key are set via environment variables (WEB3J_RPC_URL, ADMIN_PRIVATE_KEY).
-- Web3j and Credentials beans are configured in Web3jConfig.kt and AdminWalletConfig.kt.
-- The ContractService class loads the smart contract and provides methods for minting, transferring, and querying balances.
+### 🗄️ H2 Database Access
+The backend uses an in-memory H2 database, which is automatically created and populated with initial data on startup. You can access the H2 console at [http://localhost:8085/h2-console](http://localhost:8085/h2-console). The ONLY credentials you need to alter after visiting the console is JDBC URL: and you can find this almost at the bottom of the backend console under 
+```2025-06-14T20:22:05.051+02:00  INFO 13696 --- [backend] [  restartedMain] o.s.b.a.h2.H2ConsoleAutoConfiguration    : H2 console available at '/h2-console'. Database available at 'jdbc:h2:mem:a2d7ebf9-0e5b-4f6e-acb7-0441b5a68ea0'``` in this case the JDBC URL is `jdbc:h2:mem:a2d7ebf9-0e5b-4f6e-acb7-0441b5a68ea0`. This changes every time you restart the backend, so you will need to update it accordingly.
 
 
 ---
 
-## 📄 License
+## 🔗 Flow Architecture & ERD
+- **[Flow Architecture](FLOW_ARCHITECTURE.md)**: Detailed flow from frontend to backend, including routing, services, authentication, and controllers.
+- **[ERD](ERD.md)**: Entity-Relationship Diagram showing the database structure and relationships between entities.
 
-[MIT](LICENSE)
+---
