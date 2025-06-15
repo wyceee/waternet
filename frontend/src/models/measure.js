@@ -16,7 +16,7 @@ export function createMeasure(userId = null) {
         txHash: '',
         area: null,
         capacity: null,
-        files: [] // frontend only
+        files: []
     };
 }
 
@@ -42,16 +42,4 @@ export function validateMeasure(measure) {
     }
 
     return errors;
-}
-
-export function isApproved(measure) {
-    return measure.status === 'APPROVED';
-}
-
-export function isPending(measure) {
-    return measure.status === 'PENDING';
-}
-
-export function isRejected(measure) {
-    return measure.status === 'REJECTED';
 }

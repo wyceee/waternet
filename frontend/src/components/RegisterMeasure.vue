@@ -104,11 +104,10 @@ import { ref } from 'vue';
 import { Upload } from 'lucide-vue-next';
 import { createMeasure, validateMeasure } from '@/models/measure.js';
 import MeasureService from '@/services/MeasureService.js';
-import {sessionService} from "@/services/Session.js";
+import {sessionService} from "@/services/session.js";
 
 const currentUserId = sessionService.user?.id || null;
 const form = ref(createMeasure(currentUserId));
-
 
 form.value.measureType = 'Green Roof';
 form.value.area = null;
@@ -137,7 +136,7 @@ async function submitForm() {
   const measurePayload = {
     userId: currentUserId,
     description: form.value.description,
-    photoUrl: form.value.photoUrl, // Send base64 data URL
+    photoUrl: form.value.photoUrl,
     location: form.value.location,
     timestamp: new Date().toISOString(),
     status: 'PENDING',

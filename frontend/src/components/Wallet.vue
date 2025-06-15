@@ -9,7 +9,7 @@
     <div v-else>
       <div class="header">
         <h1 class="title">Wallet</h1>
-        <p class="subtitle">Manage your AquaRewards tokens</p>
+        <p class="subtitle">Manage your Hydrewards tokens</p>
       </div>
 
       <div class="balance-card">
