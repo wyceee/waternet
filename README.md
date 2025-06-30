@@ -56,6 +56,7 @@ No web3 wallet or tx signing is required for users and supervisors! Everything i
 ### 🌐 Frontend
 Runs at [http://localhost:5173](http://localhost:5173)
 
+UNIX or (windows execute 1 by 1)
 ```bash
 cd frontend
 npm install
@@ -65,9 +66,18 @@ npm run dev
 ### 🖥️ Backend
 Runs at [http://localhost:8085](http://localhost:8085)
 
+UNIX
 ```bash
 cd backend
+./gradlew build
 ./mvnw spring-boot:run
+```
+
+WINDOWS (execute 1 by 1)
+```bash
+cd backend
+.\gradlew build
+.\gradlew bootRun
 ```
 
 ### 🗄️ H2 Database Access
