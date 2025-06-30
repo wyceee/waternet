@@ -43,7 +43,7 @@
             <Coins class="feature-icon-inner blue" />
           </div>
           <h3>3. Earn Tokens</h3>
-          <p>Receive HYD tokens on VeChainThor blockchain once your measure is approved</p>
+          <p>Receive HYD tokens on the Ethereum Sepolia blockchain once your measure is approved</p>
         </div>
       </div>
     </div>

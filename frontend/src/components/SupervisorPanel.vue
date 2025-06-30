@@ -326,6 +326,7 @@ async function reject(id) {
     showNotification('Failed to reject measure.', 'error')
   } finally {
     loadingStates.value[id] = false
+    processing.value = false
   }
 }
 </script>
